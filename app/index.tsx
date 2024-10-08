@@ -5,7 +5,8 @@ const Home = () => {
   return (
     <SafeAreaView>
       <View>
-        <Text>Hello world!</Text>
+        <Text>Hola mundo!</Text>
+        <Text>PEC1</Text>
       </View>
     </SafeAreaView>
   );
