@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -17,10 +18,10 @@ export default function Home() {
         <Text style={styles.subtitle}>Crea eventos o participa en los de otras personas</Text>
       </View>
 
-      <TouchableOpacity style={styles.registerButton}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.registerButtonText}>Regístrate gratis</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
         <Text style={styles.loginText}>Inicia sesión</Text>
       </TouchableOpacity>
     </SafeAreaView>

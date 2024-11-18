@@ -1,7 +1,7 @@
-import { IconHome, IconHomeFilled } from '@tabler/icons-react-native';
+import { IconCategory, IconCategoryFilled, IconHome, IconHomeFilled } from '@tabler/icons-react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Icon, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -11,7 +11,14 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: '#FFFFFF',
         tabBarInactiveTintColor: '#CCCCCC',
-        tabBarActiveBackgroundColor: '#202936',
+        tabBarIconStyle: {
+          width: 24,
+          height: 24,
+          color: '#FFFFFF',
+        },
+        tabBarStyle: {
+          backgroundColor: theme.colors.primary,
+        },
         headerShown: false,
       }}>
       <Tabs.Screen
@@ -19,20 +26,21 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ focused }) => focused ?
-            <Icon size={24} color={theme.colors.background} source={IconHomeFilled} />
+            <IconHomeFilled size={24} color={theme.colors.background} />
             :
-            <Icon size={24} source={IconHome} />
+            <IconHome size={24} />
         }}
       />
-      {/* <Tabs.Screen
-        name="explore"
+      <Tabs.Screen
+        name="categories"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            // <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
+          title: 'Categorías',
+          tabBarIcon: ({ focused }) => focused ?
+            <IconCategoryFilled size={24} color={theme.colors.background} />
+            :
+            <IconCategory size={24} />
         }}
-      /> */}
+      />
     </Tabs>
   );
 }

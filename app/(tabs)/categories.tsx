@@ -7,7 +7,7 @@ import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Text } from "react-native-paper";
 
-export default function MainPageScreen() {
+export default function CategoriesScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
