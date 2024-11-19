@@ -1,3 +1,4 @@
+import { CategoryType } from "@/types/categories";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -72,7 +73,7 @@ export default function Signup() {
                     }}
                 />
 
-                <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(tabs)")}>
+                <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(tabs)?category=music")}>
                     <Text style={styles.loginButtonText}>
                         Crear cuenta
                     </Text>

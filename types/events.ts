@@ -9,4 +9,5 @@ export type Event = {
     capacity: number;
     category: CategoryType;
     address: String;
+    image: any;
 }

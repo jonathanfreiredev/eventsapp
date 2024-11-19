@@ -4,7 +4,7 @@ import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Text } from "react-native-paper";
 
-export default function CategoriesScreen() {
+export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -39,19 +39,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    padding: 20,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    padding: 20,
   },
   logo: {
     width: 150,
     height: 60,
   },
   section: {
-    marginTop: 20,
+    padding: 16,
   },
   sectionTitle: {
     fontWeight: "bold",

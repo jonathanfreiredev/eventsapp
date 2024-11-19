@@ -18,4 +18,5 @@ export type Category = {
   name: CategoryType;
   icon: Icon;
   backgroundColor: [string, string];
+  slug: string;
 };

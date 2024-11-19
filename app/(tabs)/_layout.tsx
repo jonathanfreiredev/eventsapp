@@ -1,23 +1,32 @@
-import { IconCategory, IconCategoryFilled, IconHome, IconHomeFilled } from '@tabler/icons-react-native';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import { IconCategory, IconHome, IconUser } from '@tabler/icons-react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { useTheme } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 export default function TabLayout() {
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#FFFFFF',
         tabBarInactiveTintColor: '#CCCCCC',
+        tabBarActiveTintColor: 'white',
         tabBarIconStyle: {
-          width: 24,
-          height: 24,
-          color: '#FFFFFF',
+          color: "white",
+          marginVertical: "auto",
+        },
+        tabBarLabel: ({ focused, children }) => {
+          return (
+            <Text style={{ color: focused ? 'white' : '#CCCCCC', fontSize: focused ? 11 : 10 }}>
+              {children}
+            </Text>
+          )
         },
         tabBarStyle: {
           backgroundColor: theme.colors.primary,
+          paddingVertical: 10,
+          height: 60,
         },
         headerShown: false,
       }}>
@@ -25,20 +34,33 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => focused ?
-            <IconHomeFilled size={24} color={theme.colors.background} />
-            :
-            <IconHome size={24} />
+          tabBarIcon: ({ focused }) =>
+            <IconHome size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}
       />
       <Tabs.Screen
         name="categories"
         options={{
           title: 'Categorías',
-          tabBarIcon: ({ focused }) => focused ?
-            <IconCategoryFilled size={24} color={theme.colors.background} />
-            :
-            <IconCategory size={24} />
+          tabBarIcon: ({ focused }) =>
+            <IconCategory size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
+        }}
+      />
+      <Tabs.Screen
+        name="events"
+        options={{
+          title: 'Eventos',
+          tabBarIcon: ({ focused }) =>
+            <IconCategory size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          
+          tabBarIcon: ({ focused }) =>
+            <IconUser size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}
       />
     </Tabs>
