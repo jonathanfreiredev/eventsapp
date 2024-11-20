@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { IconCategory, IconHome, IconUser } from '@tabler/icons-react-native';
+import { IconCategory, IconHome, IconTicket, IconUser } from '@tabler/icons-react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native-paper';
@@ -51,7 +51,7 @@ export default function TabLayout() {
         options={{
           title: 'Eventos',
           tabBarIcon: ({ focused }) =>
-            <IconCategory size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
+            <IconTicket size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}
       />
       <Tabs.Screen
