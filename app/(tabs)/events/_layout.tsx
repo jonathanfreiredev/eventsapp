@@ -8,5 +8,6 @@ export default function EventsLayout() {
   >
     <Stack.Screen name="index" />
     <Stack.Screen name="created" />
+    <Stack.Screen name="[eventId]" />
   </Stack>;
 }

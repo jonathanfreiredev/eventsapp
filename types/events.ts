@@ -7,6 +7,7 @@ export type Event = {
     startDate: Date;
     endDate: Date;
     capacity: number;
+    numParticipants: number;
     category: CategoryType;
     address: String;
     image: any;

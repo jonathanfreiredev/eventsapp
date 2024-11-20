@@ -1,15 +1,11 @@
 import { EventCard } from "@/components/events/EventCard";
 import { EventsMock } from "@/constants/events";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, SegmentedButtons } from "react-native-paper";
 
 export default function EventsCreatedScreen() {
-  const pathname = usePathname();
-
-  const pathnameEvents = pathname.split("/").pop();
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -45,7 +41,7 @@ export default function EventsCreatedScreen() {
 
         <View style={styles.eventsSection}>
           {EventsMock.map((event) => (
-            <EventCard key={event.name} event={event} isFavourite={false} />
+            <EventCard key={event.name} event={event} isToEdit />
           ))}
         </View>
       </View>

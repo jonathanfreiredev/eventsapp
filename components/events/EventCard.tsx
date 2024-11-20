@@ -1,27 +1,38 @@
 import { Event } from "@/types/events";
-import { IconBookmark, IconBookmarkFilled, IconCalendar, IconMapPin } from "@tabler/icons-react-native";
-import { Image, StyleSheet, View } from "react-native";
+import { IconBookmark, IconBookmarkFilled, IconCalendar, IconEdit, IconMapPin } from "@tabler/icons-react-native";
+import { router } from "expo-router";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
 
 interface EventCardProps {
     event: Event;
     isFavourite?: boolean;
+    isToEdit?: boolean;
 }
 
 
-export const EventCard = ({ event, isFavourite }: EventCardProps) => {
-    return <View style={styles.card}>
+export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
+    return <TouchableOpacity style={styles.card} onPress={() => router.navigate({
+        pathname: "/(tabs)/events/[eventId]",
+        params: {
+            eventId: event.id,
+        },
+    })}>
         <Image source={event.image} resizeMode="cover" style={styles.image} />
         <View style={styles.content}>
             <View style={styles.contentHeader}>
                 <Text style={styles.eventTitle} variant="titleMedium">{event.name}</Text>
-                <View>
-                    {
-                        isFavourite ?
-                            <IconBookmarkFilled size={30} color="#000000" /> :
-                            <IconBookmark size={30} color="#000000" />
-                    }
-                </View>
+                {!!isToEdit ?
+                    <View>
+                        <IconEdit size={27} color="#000000" />
+                    </View>
+                    : <View>
+                        {
+                            isFavourite ?
+                                <IconBookmarkFilled size={27} color="#000000" /> :
+                                <IconBookmark size={27} color="#000000" />
+                        }
+                    </View>}
             </View>
             <View style={styles.eventDetails}>
                 <View style={styles.detail}>
@@ -34,8 +45,8 @@ export const EventCard = ({ event, isFavourite }: EventCardProps) => {
                 </View>
             </View>
         </View>
+    </TouchableOpacity>
 
-    </View>
 }
 
 const styles = StyleSheet.create({
