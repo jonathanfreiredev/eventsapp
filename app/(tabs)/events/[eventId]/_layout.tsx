@@ -8,5 +8,7 @@ export default function EventsLayout() {
   >
     <Stack.Screen name="index" />
     <Stack.Screen name="edit" />
+    <Stack.Screen name="participants" />
+    <Stack.Screen name="comments" />
   </Stack>;
 }

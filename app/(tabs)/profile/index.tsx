@@ -26,8 +26,8 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => router.replace("/(tabs)/profile/edit")} />
           <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => router.replace("/(tabs)/events/create")} />
-          <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => { }} />
-          <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => { }} />
+          <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => router.replace("/(tabs)/profile/events-favourites")} />
+          <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => router.replace("/login")} />
         </View>
       </ScrollView>
     </SafeAreaView>

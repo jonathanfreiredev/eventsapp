@@ -31,13 +31,13 @@ export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
                     })}>
                         <IconEdit size={27} color="#000000" />
                     </TouchableOpacity>
-                    : <View>
+                    : <TouchableOpacity>
                         {
                             isFavourite ?
                                 <IconBookmarkFilled size={27} color="#000000" /> :
                                 <IconBookmark size={27} color="#000000" />
                         }
-                    </View>}
+                    </TouchableOpacity>}
             </View>
             <View style={styles.eventDetails}>
                 <View style={styles.detail}>

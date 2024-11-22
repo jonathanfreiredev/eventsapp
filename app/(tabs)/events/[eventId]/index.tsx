@@ -18,7 +18,7 @@ export default function EventScreen() {
         return router.replace("/(tabs)/events");
     }
 
-    
+
     const eventDuration = (event.endDate.getTime() - event.startDate.getTime()) / 60000;
 
     // horas y minutos
@@ -49,10 +49,20 @@ export default function EventScreen() {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.sectionLinks}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => router.navigate({
+                                pathname: "/(tabs)/events/[eventId]/participants",
+                                params: {
+                                    eventId: event.id,
+                                },
+                            })}>
                                 <Text variant="titleMedium" style={styles.participants}>{event.numParticipants} participants</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => router.navigate({
+                                pathname: "/(tabs)/events/[eventId]/comments",
+                                params: {
+                                    eventId: event.id,
+                                },
+                            })}>
                                 <Text variant="titleMedium" style={styles.comments}>Ver comentarios</Text>
                             </TouchableOpacity>
                         </View>
