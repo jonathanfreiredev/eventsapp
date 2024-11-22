@@ -3,35 +3,38 @@ import { Categories } from "@/constants/categories";
 import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CategoriesScreen() {
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={require("@/assets/images/events-dark-logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Avatar.Image
-          size={50}
-          source={{
-            uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-          }}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="titleLarge" style={styles.sectionTitle}>Categorías</Text>
-        <View style={styles.categoriesGrid}>
-          {Categories.map((category) => (
-            <View key={category.name} style={styles.categoryCard}>
-              <CategoryCard category={category} iconSize={60} />
-            </View>
-          ))}
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Image
+            source={require("@/assets/images/events-dark-logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Avatar.Image
+            size={50}
+            source={{
+              uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+            }}
+          />
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          <Text variant="titleLarge" style={styles.sectionTitle}>Categorías</Text>
+          <View style={styles.categoriesGrid}>
+            {Categories.map((category) => (
+              <View key={category.name} style={styles.categoryCard}>
+                <CategoryCard category={category} iconSize={60} />
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

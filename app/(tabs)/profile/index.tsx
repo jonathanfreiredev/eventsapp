@@ -1,35 +1,36 @@
 import { ProfileActionButton } from "@/components/profile/ProfileActionButton";
-import { IconBookmark, IconCamera, IconLogout, IconPlus, IconUser } from "@tabler/icons-react-native";
+import { IconBookmark, IconLogout, IconPlus, IconUser } from "@tabler/icons-react-native";
+import { router } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="titleMedium">Mi perfil</Text>
-        <TouchableOpacity style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={{
-              uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-            }}
-          />
-          <View style={styles.imageOverlay}>
-            <IconCamera size={30} color="#323232" />
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text variant="titleMedium">Mi perfil</Text>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={{
+                uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+              }}
+            />
           </View>
-        </TouchableOpacity>
-        <Text variant="labelLarge">Jonathan Freire</Text>
-      </View>
+          <Text variant="labelLarge">Jonathan Freire</Text>
+        </View>
 
-      <View style={styles.section}>
-        <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => { }} />
-        <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => { }} />
-        <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => { }} />
-        <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => { }} />
-      </View>
-    </ScrollView>
+        <View style={styles.section}>
+          <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => router.replace("/(tabs)/profile/edit")} />
+          <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => router.replace("/(tabs)/events/create")} />
+          <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => { }} />
+          <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => { }} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

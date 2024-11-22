@@ -23,9 +23,14 @@ export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
             <View style={styles.contentHeader}>
                 <Text style={styles.eventTitle} variant="titleMedium">{event.name}</Text>
                 {!!isToEdit ?
-                    <View>
+                    <TouchableOpacity onPress={() => router.navigate({
+                        pathname: "/(tabs)/events/[eventId]/edit",
+                        params: {
+                            eventId: event.id,
+                        },
+                    })}>
                         <IconEdit size={27} color="#000000" />
-                    </View>
+                    </TouchableOpacity>
                     : <View>
                         {
                             isFavourite ?

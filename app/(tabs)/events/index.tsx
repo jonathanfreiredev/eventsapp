@@ -4,10 +4,12 @@ import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, SegmentedButtons } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventsParticipatingScreen() {
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Image
           source={require("@/assets/images/events-dark-logo.png")}
@@ -46,6 +48,7 @@ export default function EventsParticipatingScreen() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
