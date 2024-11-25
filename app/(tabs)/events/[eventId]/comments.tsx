@@ -1,13 +1,15 @@
+import { FloatingButton } from "@/components/common/FloatingButton";
 import { CommentItem } from "@/components/events/CommentItem";
 import { CommentsMock } from "@/constants/comments";
 import { EventsMock } from "@/constants/events";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { IconButton, Modal, Portal, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventCommentsScreen() {
+    const [openedModal, setOpenedModal] = useState(false);
     const { eventId } = useLocalSearchParams();
     const event = EventsMock.find((event) => event.id === eventId);
 
@@ -42,7 +44,31 @@ export default function EventCommentsScreen() {
                         ))}
                     </View>
                 </ScrollView>
+
+                <FloatingButton label="Crea un comentario" onPress={() => setOpenedModal(true)} />
             </View>
+            <Portal>
+                <Modal visible={openedModal} onDismiss={() => setOpenedModal(false)} contentContainerStyle={styles.modal}>
+                    <View style={styles.form}>
+                        <Text variant="titleMedium">Escribe tu comentario</Text>
+                        <TextInput
+                            label={<Text>Comentario</Text>}
+                            outlineColor="#B0B0B0"
+                            multiline
+                            activeOutlineColor="black"
+                            textColor="black"
+                            mode="outlined"
+                            outlineStyle={{ borderRadius: 8 }}
+                        />
+
+                        <TouchableOpacity
+                            style={styles.buttonForm}
+                            onPress={() => setOpenedModal(false)}>
+                            <Text variant="bodyLarge" style={styles.buttonFormText}>Guardar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+            </Portal>
         </SafeAreaView>
     );
 }
@@ -62,6 +88,7 @@ const styles = StyleSheet.create({
     scrollView: {
         height: "100%",
         width: "100%",
+        paddingBottom: 80,
     },
     header: {
         flexDirection: "column",
@@ -75,5 +102,30 @@ const styles = StyleSheet.create({
         gap: 10,
         marginTop: 15,
         paddingHorizontal: 20,
+    },
+    buttonSection: {
+        width: "100%",
+        position: "absolute",
+        padding: 20,
+        bottom: 0,
+    },
+    modal: {
+        backgroundColor: 'white',
+        padding: 20,
+    },
+    form: {
+        flexDirection: "column",
+        gap: 10,
+        padding: 10,
+    },
+    buttonForm: {
+        backgroundColor: "#5F19F2",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
+        marginTop: 20,
+    },
+    buttonFormText: {
+        color: "white",
     },
 });

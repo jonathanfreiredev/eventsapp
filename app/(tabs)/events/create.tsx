@@ -1,5 +1,7 @@
+import { useCreateEvent } from "@/api/mutations/events";
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
+import { FloatingButton } from "@/components/common/FloatingButton";
 import { NumberInput } from "@/components/common/NumberInput";
 import { CategoryType } from "@/types/categories";
 import { IconCamera } from "@tabler/icons-react-native";
@@ -15,6 +17,8 @@ export default function CreateEventScreen() {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [capacity, setCapacity] = useState(10);
+
+    const createEvent = useCreateEvent();
 
     return (
         <SafeAreaView style={styles.container}>
@@ -82,15 +86,33 @@ export default function CreateEventScreen() {
                     </View>
                 </ScrollView>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.replace("/(tabs)/profile")}>
-                    <Text variant="bodyLarge" style={styles.buttonText}>Guardar</Text>
-                </TouchableOpacity>
+                <FloatingButton label="Guardar" onPress={async () => {
+                    try {
+                        console.log("Creating event...");
+                        const res = await createEvent.mutateAsync({
+                            name: "Encuentro musical",
+                            description: "Un evento para disfrutar con...",
+                            startDate,
+                            endDate,
+                            capacity,
+                            category,
+                            address: {
+                                street: "Calle 123",
+                                city: "Madrid",
+                                zip: "28004",
+                                country: "España",
+                            },
+                        });
 
+                        console.log("Event created:", res);
 
-            </View >
-        </SafeAreaView >
+                        router.replace("/(tabs)/profile")
+                    } catch (error) {
+                        console.log("Error creating event:", error);
+                    }
+                }} />
+            </View>
+        </SafeAreaView>
     );
 }
 
@@ -102,14 +124,10 @@ const styles = StyleSheet.create({
     },
     content: {
         height: "100%",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 20,
     },
     scrollView: {
-        height: "100%",
         width: "100%",
-        marginBottom: 70,
+        paddingBottom: 70,
     },
     header: {
         flexDirection: "column",
@@ -117,10 +135,6 @@ const styles = StyleSheet.create({
         gap: 15,
         marginTop: 20,
         paddingVertical: 20,
-    },
-    logo: {
-        width: 150,
-        height: 60,
     },
     section: {
         flexDirection: "column",
@@ -153,19 +167,5 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 10,
-    },
-    button: {
-        position: "absolute",
-        bottom: 0,
-        width: "100%",
-        backgroundColor: "#5F19F2",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "white",
-        fontWeight: "bold",
     },
 });

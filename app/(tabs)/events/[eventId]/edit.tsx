@@ -1,5 +1,6 @@
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
+import { FloatingButton } from "@/components/common/FloatingButton";
 import { NumberInput } from "@/components/common/NumberInput";
 import { EventsMock } from "@/constants/events";
 import { CategoryType } from "@/types/categories";
@@ -92,15 +93,9 @@ export default function EditEventScreen() {
                     </View>
                 </ScrollView>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.replace("/(tabs)/events/created")}>
-                    <Text variant="bodyLarge" style={styles.buttonText}>Guardar</Text>
-                </TouchableOpacity>
-
-
+                <FloatingButton label="Guardar" onPress={() => router.replace("/(tabs)/events/created")} />
             </View >
-        </SafeAreaView >
+        </SafeAreaView>
     );
 }
 
@@ -119,7 +114,7 @@ const styles = StyleSheet.create({
     scrollView: {
         height: "100%",
         width: "100%",
-        marginBottom: 70,
+        paddingBottom: 70,
     },
     header: {
         flexDirection: "column",
@@ -127,10 +122,6 @@ const styles = StyleSheet.create({
         gap: 15,
         marginTop: 20,
         paddingVertical: 20,
-    },
-    logo: {
-        width: 150,
-        height: 60,
     },
     section: {
         flexDirection: "column",
@@ -163,19 +154,5 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 10,
-    },
-    button: {
-        position: "absolute",
-        bottom: 0,
-        width: "100%",
-        backgroundColor: "#5F19F2",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "white",
-        fontWeight: "bold",
     },
 });

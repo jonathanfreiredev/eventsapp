@@ -1,11 +1,11 @@
+import AuthLayout from '@/components/layouts/AuthLayout';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home() {
   return (
-    <SafeAreaView style={styles.container}>
+    <AuthLayout>
       <View style={styles.logoView}>
         <Image
           source={require('@/assets/images/events-logo.png')}
@@ -25,18 +25,11 @@ export default function Home() {
       <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
         <Text style={styles.loginText}>Inicia sesión</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </AuthLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#202936',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
   logoView: {
     marginBottom: 40,
   },

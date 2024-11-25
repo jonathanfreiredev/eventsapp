@@ -1,14 +1,14 @@
 import { EventCard } from "@/components/events/EventCard";
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { EventsMock } from "@/constants/events";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventsFavouritesScreen() {
     return (
-        <SafeAreaView style={styles.container}>
+        <AppLayout>
             <View style={styles.content}>
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
                     <View style={styles.header}>
@@ -30,16 +30,11 @@ export default function EventsFavouritesScreen() {
                     </View>
                 </ScrollView>
             </View>
-        </SafeAreaView>
+        </AppLayout>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#ffffff",
-        padding: 20,
-    },
     content: {
         height: "100%",
         flexDirection: "column",
@@ -57,13 +52,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingVertical: 20,
     },
-    logo: {
-        width: 150,
-        height: 60,
-    },
     eventsSection: {
         flexDirection: "column",
         gap: 10,
         marginTop: 15,
-      },
+    },
 });

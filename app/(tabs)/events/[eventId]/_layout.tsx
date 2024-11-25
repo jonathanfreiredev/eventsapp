@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function EventsLayout() {
+export default function EventLayout() {
   return <Stack
     screenOptions={{
       headerShown: false,

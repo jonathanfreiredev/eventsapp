@@ -1,3 +1,4 @@
+import { FloatingButton } from "@/components/common/FloatingButton";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import React from "react";
@@ -23,7 +24,7 @@ export default function EditProfileScreen() {
                                 <IconCamera size={30} color="#323232" />
                             </View>
                         </TouchableOpacity>
-                        
+
                         <IconButton
                             icon="chevron-left"
                             iconColor="#5F19F2"
@@ -60,11 +61,7 @@ export default function EditProfileScreen() {
                     </View>
                 </ScrollView>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => router.replace("/(tabs)/profile")}>
-                    <Text variant="bodyLarge" style={styles.buttonText}>Guardar</Text>
-                </TouchableOpacity>
+                <FloatingButton label="Guardar" onPress={() => router.replace("/(tabs)/profile")} />
             </View>
         </SafeAreaView>
     );
@@ -93,10 +90,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingVertical: 20,
     },
-    logo: {
-        width: 150,
-        height: 60,
-    },
     section: {
         flexDirection: "column",
         gap: 10,
@@ -123,19 +116,5 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 10,
-    },
-    button: {
-        position: "absolute",
-        bottom: 0,
-        width: "100%",
-        backgroundColor: "#5F19F2",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "white",
-        fontWeight: "bold",
     },
 });

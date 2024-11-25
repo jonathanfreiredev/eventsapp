@@ -1,14 +1,14 @@
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { ProfileActionButton } from "@/components/profile/ProfileActionButton";
 import { IconBookmark, IconLogout, IconPlus, IconUser } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <AppLayout>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text variant="titleMedium">Mi perfil</Text>
@@ -30,28 +30,17 @@ export default function ProfileScreen() {
           <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => router.replace("/login")} />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </AppLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#ffffff",
-    padding: 20,
-    gap: 20,
-  },
   header: {
     flexDirection: "column",
     alignItems: "center",
     padding: 20,
     gap: 15,
     marginTop: 20,
-  },
-  logo: {
-    width: 150,
-    height: 60,
   },
   section: {
     flexDirection: "column",
@@ -69,12 +58,4 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  imageOverlay: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(240,240,240,0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-  }
 });

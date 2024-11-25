@@ -1,3 +1,4 @@
+import { FloatingButton } from "@/components/common/FloatingButton";
 import { EventsMock } from "@/constants/events";
 import { IconBookmark, IconCalendar, IconMapPin } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -10,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function EventScreen() {
     const [participating, setParticipating] = React.useState(false);
     const { eventId } = useLocalSearchParams();
-    const styles = useStyles(participating);
 
     const event = EventsMock.find((event) => event.id === eventId);
 
@@ -21,7 +21,6 @@ export default function EventScreen() {
 
     const eventDuration = (event.endDate.getTime() - event.startDate.getTime()) / 60000;
 
-    // horas y minutos
     const eventDurationHours = Math.floor(eventDuration / 60);
     const eventDurationMinutes = eventDuration % 60;
 
@@ -87,33 +86,29 @@ export default function EventScreen() {
                     </View>
                 </ScrollView>
 
-                <View style={styles.buttonSection}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => setParticipating(!participating)}>
-                        <Text variant="bodyLarge" style={styles.buttonText}>{participating ? "Participando" : "Participar"}</Text>
-                    </TouchableOpacity>
-                </View>
+                <FloatingButton
+                    label={participating ? "Participando" : "Participar"}
+                    backgroundColor={participating ? "#16d216" : "default"}
+                    onPress={() => setParticipating(!participating)}
+                />
             </View>
         </SafeAreaView>
     );
 }
 
-const useStyles = (participating: boolean) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#ffffff",
     },
     content: {
-        height: "100%",
         flexDirection: "column",
         alignItems: "center",
         gap: 20,
     },
     scrollView: {
-        height: "100%",
         width: "100%",
-        marginBottom: 70,
+        paddingBottom: 70,
     },
     cover: {
         width: "100%",
@@ -162,22 +157,5 @@ const useStyles = (participating: boolean) => StyleSheet.create({
     otherDetails: {
         flexDirection: "column",
         gap: 5,
-    },
-    buttonSection: {
-        width: "100%",
-        position: "absolute",
-        padding: 20,
-        bottom: 0,
-    },
-    button: {
-        backgroundColor: participating ? "#16d216" : "#5F19F2",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "white",
-        fontWeight: "bold",
     },
 });

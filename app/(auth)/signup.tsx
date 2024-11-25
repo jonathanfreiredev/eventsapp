@@ -1,15 +1,14 @@
-import { CategoryType } from "@/types/categories";
+import AuthLayout from "@/components/layouts/AuthLayout";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, TextInput } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Signup() {
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <AuthLayout>
             <Text style={styles.greeting}>Hola! 👋</Text>
             <Text style={styles.instruction}>Introduce los siguientes datos para registrarte</Text>
 
@@ -86,18 +85,11 @@ export default function Signup() {
                     </Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </AuthLayout>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#202936",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 20,
-    },
     greeting: {
         fontSize: 24,
         fontWeight: "bold",

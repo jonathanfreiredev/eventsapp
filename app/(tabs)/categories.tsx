@@ -1,58 +1,28 @@
 import { CategoryCard } from "@/components/categories/CategoryCard";
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { Categories } from "@/constants/categories";
 import React from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
 
 export default function CategoriesScreen() {
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <Image
-            source={require("@/assets/images/events-dark-logo.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Avatar.Image
-            size={50}
-            source={{
-              uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-            }}
-          />
+    <AppLayout showHeader>
+      <View style={styles.section}>
+        <Text variant="titleLarge" style={styles.sectionTitle}>Categorías</Text>
+        <View style={styles.categoriesGrid}>
+          {Categories.map((category) => (
+            <View key={category.name} style={styles.categoryCard}>
+              <CategoryCard category={category} iconSize={60} />
+            </View>
+          ))}
         </View>
-
-        <View style={styles.section}>
-          <Text variant="titleLarge" style={styles.sectionTitle}>Categorías</Text>
-          <View style={styles.categoriesGrid}>
-            {Categories.map((category) => (
-              <View key={category.name} style={styles.categoryCard}>
-                <CategoryCard category={category} iconSize={60} />
-              </View>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </AppLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    padding: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  logo: {
-    width: 150,
-    height: 60,
-  },
   section: {
     marginTop: 20,
   },
