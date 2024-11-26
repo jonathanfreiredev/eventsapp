@@ -1,12 +1,21 @@
+import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditProfileScreen() {
+    const { session } = useSession();
+
+    useEffect(() => {
+        if (!session) {
+            router.navigate("/(auth)/login");
+        }
+    }, [session]);
+    
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>

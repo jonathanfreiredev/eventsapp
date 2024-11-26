@@ -24,7 +24,7 @@ export const useCreateEvent = () => {
     return useMutation<Event, Error, CreateEventInput>({
       mutationKey: ['createEvent'],
       mutationFn: async (event: CreateEventInput): Promise<Event> => {
-        const { data } = await apiClient.post('/events', JSON.stringify(event));
+        const { data } = await apiClient.post('/events', event);
         return data;
       },
     });

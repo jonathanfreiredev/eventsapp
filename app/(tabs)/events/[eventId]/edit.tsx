@@ -1,3 +1,4 @@
+import { useSession } from "@/components/common/AuthContext";
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
 import { FloatingButton } from "@/components/common/FloatingButton";
@@ -6,7 +7,7 @@ import { EventsMock } from "@/constants/events";
 import { CategoryType } from "@/types/categories";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,8 +18,15 @@ export default function EditEventScreen() {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [capacity, setCapacity] = useState(10);
-
     const { eventId } = useLocalSearchParams();
+    const { session } = useSession();
+
+    useEffect(() => {
+        if (!session) {
+            router.navigate("/(auth)/login");
+        }
+    }, [session]);
+
     const event = EventsMock.find((event) => event.id === eventId);
 
     if (!event) {

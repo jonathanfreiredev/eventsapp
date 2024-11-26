@@ -1,8 +1,9 @@
+import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { EventsMock } from "@/constants/events";
 import { IconBookmark, IconCalendar, IconMapPin } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,6 +12,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function EventScreen() {
     const [participating, setParticipating] = React.useState(false);
     const { eventId } = useLocalSearchParams();
+    const { session } = useSession();
+
+    useEffect(() => {
+        if (!session) {
+            router.navigate("/(auth)/login");
+        }
+    }, [session]);
 
     const event = EventsMock.find((event) => event.id === eventId);
 

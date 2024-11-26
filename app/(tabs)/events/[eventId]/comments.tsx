@@ -1,9 +1,10 @@
+import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { CommentItem } from "@/components/events/CommentItem";
 import { CommentsMock } from "@/constants/comments";
 import { EventsMock } from "@/constants/events";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Modal, Portal, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,6 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function EventCommentsScreen() {
     const [openedModal, setOpenedModal] = useState(false);
     const { eventId } = useLocalSearchParams();
+    const { session } = useSession();
+
+    useEffect(() => {
+        if (!session) {
+            router.navigate("/(auth)/login");
+        }
+    }, [session]);
+
     const event = EventsMock.find((event) => event.id === eventId);
 
     if (!event) {

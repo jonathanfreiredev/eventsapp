@@ -1,3 +1,4 @@
+import { useSession } from "@/components/common/AuthContext";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { ProfileActionButton } from "@/components/profile/ProfileActionButton";
 import { IconBookmark, IconLogout, IconPlus, IconUser } from "@tabler/icons-react-native";
@@ -7,6 +8,8 @@ import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
 export default function ProfileScreen() {
+  const { signOut } = useSession();
+
   return (
     <AppLayout>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -27,7 +30,7 @@ export default function ProfileScreen() {
           <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => router.replace("/(tabs)/profile/edit")} />
           <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => router.replace("/(tabs)/events/create")} />
           <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => router.replace("/(tabs)/profile/events-favourites")} />
-          <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => router.replace("/login")} />
+          <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => signOut()} />
         </View>
       </ScrollView>
     </AppLayout>

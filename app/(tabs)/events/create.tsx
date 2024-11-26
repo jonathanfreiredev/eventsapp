@@ -1,4 +1,5 @@
 import { useCreateEvent } from "@/api/mutations/events";
+import { useSession } from "@/components/common/AuthContext";
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
 import { FloatingButton } from "@/components/common/FloatingButton";
@@ -6,7 +7,7 @@ import { NumberInput } from "@/components/common/NumberInput";
 import { CategoryType } from "@/types/categories";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +20,13 @@ export default function CreateEventScreen() {
     const [capacity, setCapacity] = useState(10);
 
     const createEvent = useCreateEvent();
+    const { session } = useSession();
+
+    useEffect(() => {
+        if (!session) {
+            router.navigate("/(auth)/login");
+        }
+    }, [session]);
 
     return (
         <SafeAreaView style={styles.container}>

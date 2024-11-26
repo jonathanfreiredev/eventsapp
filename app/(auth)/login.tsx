@@ -1,70 +1,110 @@
+import { useLogin } from "@/api/mutations/users";
+import { useSession } from "@/components/common/AuthContext";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { router } from "expo-router";
+import { Formik } from "formik";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, TextInput } from "react-native-paper";
+import * as Yup from 'yup';
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email().required(),
+  password: Yup.string().min(6).required(),
+});
 
 export default function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const { signIn } = useSession();
+
+  const login = useLogin();
 
   return (
     <AuthLayout>
       <Text style={styles.greeting}>Bienvenido de nuevo! 👋</Text>
 
-      <View style={styles.form}>
-        <TextInput
-          label={<Text style={{ color: "#FFFFFF" }}>Email</Text>}
-          placeholder="johndoe@mail.com"
-          placeholderTextColor="#B0B0B0"
-          outlineColor="#313E55"
-          activeOutlineColor="#FFFFFF"
-          textColor="#FFFFFF"
-          mode="outlined"
-          outlineStyle={{ borderRadius: 8 }}
-          style={styles.input}
-          theme={{
-            colors: {
-              background: "#313E55",
-            },
-          }}
-        />
-        <TextInput
-          label={<Text style={{ color: "#FFFFFF" }}>Contraseña</Text>}
-          placeholder="********"
-          secureTextEntry={!passwordVisible}
-          right={
-            <TextInput.Icon
-              size={24}
-              color="#A0A0A0"
-              icon={passwordVisible ? "eye-off" : "eye"}
-              onPress={() => setPasswordVisible(!passwordVisible)}
-            />
+      <Formik
+        initialValues={{
+          email: '',
+          password: '',
+        }}
+        validationSchema={LoginSchema}
+        onSubmit={async (values) => {
+          try {
+            console.log("Login user...")
+            const user = await login.mutateAsync(values);
+
+            signIn(user);
+          } catch (error) {
+            console.log("Error creating user", error)
           }
-          placeholderTextColor="#B0B0B0"
-          outlineColor="#313E55"
-          activeOutlineColor="#FFFFFF"
-          textColor="#FFFFFF"
-          mode="outlined"
-          style={styles.input}
-          outlineStyle={{ borderRadius: 8 }}
-          theme={{
-            colors: {
-              background: "#313E55",
-            },
-          }}
-        />
+        }}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          <View style={styles.form}>
+            <TextInput
+              label={<Text style={{ color: "#FFFFFF" }}>Email</Text>}
+              placeholder="johndoe@mail.com"
+              placeholderTextColor="#B0B0B0"
+              outlineColor="#313E55"
+              activeOutlineColor="#FFFFFF"
+              textColor="#FFFFFF"
+              mode="outlined"
+              outlineStyle={{ borderRadius: 8 }}
+              style={styles.input}
+              theme={{
+                colors: {
+                  background: "#313E55",
+                },
+              }}
+              onBlur={handleBlur('email')}
+              onChangeText={handleChange('email')}
+              value={values.email}
+              error={touched.email && errors.email ? true : false}
+            />
+            <TextInput
+              label={<Text style={{ color: "#FFFFFF" }}>Contraseña</Text>}
+              placeholder="********"
+              secureTextEntry={!passwordVisible}
+              right={
+                <TextInput.Icon
+                  size={24}
+                  color="#A0A0A0"
+                  icon={passwordVisible ? "eye-off" : "eye"}
+                  onPress={() => setPasswordVisible(!passwordVisible)}
+                />
+              }
+              placeholderTextColor="#B0B0B0"
+              outlineColor="#313E55"
+              activeOutlineColor="#FFFFFF"
+              textColor="#FFFFFF"
+              mode="outlined"
+              style={styles.input}
+              outlineStyle={{ borderRadius: 8 }}
+              theme={{
+                colors: {
+                  background: "#313E55",
+                },
+              }}
+              onBlur={handleBlur('password')}
+              onChangeText={handleChange('password')}
+              value={values.password}
+              error={touched.password && errors.password ? true : false}
+            />
 
-        <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(tabs)?category=music")}>
-          <Text style={styles.loginButtonText}>Accede a la app</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.loginButton} onPress={() => handleSubmit()}>
+              <Text style={styles.loginButtonText}>Accede a la app</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-          <Text style={styles.signupText}>
-            ¿Todavía no tienes una cuenta?{" "}
-            <Text style={styles.signupLink}>Regístrate</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+              <Text style={styles.signupText}>
+                ¿Todavía no tienes una cuenta?{" "}
+                <Text style={styles.signupLink}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Formik>
     </AuthLayout>
   );
 }

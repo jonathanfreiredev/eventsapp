@@ -9,6 +9,7 @@ import { IconButton, Text } from "react-native-paper";
 
 export default function EventParticipantsScreen() {
     const { eventId } = useLocalSearchParams();
+
     const event = EventsMock.find((event) => event.id === eventId);
 
     if (!event) {

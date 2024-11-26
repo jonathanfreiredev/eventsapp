@@ -58,7 +58,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Perfil',
-          
+
           tabBarIcon: ({ focused }) =>
             <IconUser size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}

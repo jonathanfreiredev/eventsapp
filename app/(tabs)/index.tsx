@@ -10,6 +10,7 @@ import { Text } from "react-native-paper";
 
 export default function MainPageScreen() {
   const params = useLocalSearchParams();
+
   const selectedCategory = Categories.find((category) => category.slug === params.category);
 
   return (
