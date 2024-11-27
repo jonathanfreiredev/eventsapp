@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { Event } from "@/types/events";
 
 export default function EventScreen() {
     const [participating, setParticipating] = React.useState(false);
@@ -20,12 +20,7 @@ export default function EventScreen() {
         }
     }, [session]);
 
-    const event = EventsMock.find((event) => event.id === eventId);
-
-    if (!event) {
-        return router.replace("/(tabs)/events");
-    }
-
+    const event = EventsMock.find((event) => event.id === eventId) as Event;
 
     const eventDuration = (event.endDate.getTime() - event.startDate.getTime()) / 60000;
 
@@ -76,7 +71,7 @@ export default function EventScreen() {
                         <View style={styles.eventDetails}>
                             <View style={styles.detail}>
                                 <IconMapPin size={20} color="#B0B0B0" />
-                                <Text style={styles.eventAddress} variant="bodyMedium">{event.address}</Text>
+                                <Text style={styles.eventAddress} variant="bodyMedium">{event.address.street}</Text>
                             </View>
                             <View style={styles.detail}>
                                 <IconCalendar size={20} color="#B0B0B0" />

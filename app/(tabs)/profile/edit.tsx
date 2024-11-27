@@ -1,12 +1,13 @@
 import { useEditProfile } from "@/api/mutations/users";
 import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
+import { ImageInput } from "@/components/common/ImageInput";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import { IconButton, Modal, Portal, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Yup from 'yup';
 
@@ -17,6 +18,7 @@ const EditProfileSchema = Yup.object().shape({
 });
 
 export default function EditProfileScreen() {
+    const [openedModal, setOpenedModal] = useState(false);
     const { session, updateSession } = useSession();
 
     const editProfile = useEditProfile();
@@ -29,7 +31,7 @@ export default function EditProfileScreen() {
 
     const onSubmit = async (values: Yup.InferType<typeof EditProfileSchema>) => {
         try {
-            console.log("Edit profile...")
+            console.log("Edit profile...", values)
 
             const user = await editProfile.mutateAsync(values);
 
@@ -82,7 +84,7 @@ export default function EditProfileScreen() {
                                     iconColor="#5F19F2"
                                     size={40}
                                     style={{ position: "absolute", top: 0, left: 0 }}
-                                    onPress={() => router.replace("/(tabs)/profile")}
+                                    onPress={() => setOpenedModal(true)}
                                 />
                             </View>
 
@@ -138,6 +140,27 @@ export default function EditProfileScreen() {
                             </View>
 
                         </ScrollView>
+
+
+                        <Portal>
+                            <Modal visible={openedModal} onDismiss={() => setOpenedModal(false)} contentContainerStyle={styles.modal}>
+                                <View style={styles.form}>
+                                    <Text variant="titleMedium">Adjunta una imagen</Text>
+
+                                    <ImageInput />
+
+                                    <TouchableOpacity
+                                        style={styles.buttonForm}
+                                        onPress={() => {
+                                            setOpenedModal(false)
+
+                                            router.replace("/(tabs)/profile")
+                                        }}>
+                                        <Text variant="bodyLarge" style={styles.buttonFormText}>Guardar</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </Modal>
+                        </Portal>
 
                         <FloatingButton label="Guardar" onPress={() => handleSubmit()} />
                     </View>
@@ -196,5 +219,24 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 10,
+    },
+    modal: {
+        backgroundColor: 'white',
+        padding: 20,
+    },
+    form: {
+        flexDirection: "column",
+        gap: 10,
+        padding: 10,
+    },
+    buttonForm: {
+        backgroundColor: "#5F19F2",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
+        marginTop: 20,
+    },
+    buttonFormText: {
+        color: "white",
     },
 });

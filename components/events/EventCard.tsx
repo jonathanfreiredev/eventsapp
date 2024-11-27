@@ -10,7 +10,6 @@ interface EventCardProps {
     isToEdit?: boolean;
 }
 
-
 export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
     return <TouchableOpacity style={styles.card} onPress={() => router.navigate({
         pathname: "/(tabs)/events/[eventId]",
@@ -42,7 +41,7 @@ export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
             <View style={styles.eventDetails}>
                 <View style={styles.detail}>
                     <IconMapPin size={20} color="#B0B0B0" />
-                    <Text style={styles.eventAddress} variant="bodyMedium">{event.address}</Text>
+                    <Text style={styles.eventAddress} variant="bodyMedium">{event.address.street}</Text>
                 </View>
                 <View style={styles.detail}>
                     <IconCalendar size={20} color="#B0B0B0" />

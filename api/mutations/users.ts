@@ -2,7 +2,7 @@ import { apiClient } from "@/api/client";
 import { useSession } from "@/components/common/AuthContext";
 import { User, UserSession } from "@/types/users";
 import { useMutation } from "@tanstack/react-query";
-import CryptoJS from "crypto-js";
+import { getAccessToken } from "../lib/getAccessToken";
 
 export type SignupInput = {
     firstName: string;
@@ -44,8 +44,6 @@ export const useLogin = () => {
 export const useEditProfile = () => {
     const { session } = useSession();
 
-    const code = process.env.SECRET || "";
-
     return useMutation<User, Error, EditProfileInput>({
         mutationKey: ['editProfile'],
         mutationFn: async (user: EditProfileInput): Promise<User> => {
@@ -53,7 +51,7 @@ export const useEditProfile = () => {
                 throw new Error("You must be logged in to edit your profile");
             }
 
-            const accessToken = CryptoJS.AES.decrypt(session.accessToken, code).toString(CryptoJS.enc.Utf8);
+            const accessToken = getAccessToken(session);
 
             const { data } = await apiClient.put('/users/update/me', user, {
                 headers: {

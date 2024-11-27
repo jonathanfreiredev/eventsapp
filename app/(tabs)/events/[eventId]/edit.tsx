@@ -1,25 +1,42 @@
+import { useEditEvent } from "@/api/mutations/events";
+import { useGetEvent } from "@/api/queries/events";
 import { useSession } from "@/components/common/AuthContext";
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
 import { FloatingButton } from "@/components/common/FloatingButton";
 import { NumberInput } from "@/components/common/NumberInput";
-import { EventsMock } from "@/constants/events";
 import { CategoryType } from "@/types/categories";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import { ActivityIndicator, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Yup from "yup";
+
+const EditEventSchema = Yup.object().shape({
+    id: Yup.string().uuid().required(),
+    name: Yup.string().required(),
+    description: Yup.string(),
+    startDate: Yup.date().required(),
+    endDate: Yup.date().required(),
+    capacity: Yup.number().required(),
+    category: Yup.string().oneOf(Object.values(CategoryType)).required(),
+    address: Yup.object().shape({
+        street: Yup.string().required(),
+        city: Yup.string().required(),
+        zip: Yup.string().required(),
+        country: Yup.string().required(),
+    }).required(),
+});
 
 export default function EditEventScreen() {
     const [image, setImage] = useState<string | null>(null);
-    const [category, setCategory] = useState<CategoryType>(CategoryType.Music);
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [capacity, setCapacity] = useState(10);
+
     const { eventId } = useLocalSearchParams();
     const { session } = useSession();
+    const editEvent = useEditEvent();
 
     useEffect(() => {
         if (!session) {
@@ -27,82 +44,177 @@ export default function EditEventScreen() {
         }
     }, [session]);
 
-    const event = EventsMock.find((event) => event.id === eventId);
+    const {
+        data: event,
+        isLoading,
+        isError,
+    } = useGetEvent(eventId as string);
+
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (isError) {
+        return <Text>Error loading events</Text>;
+    }
 
     if (!event) {
-        return router.replace("/(tabs)/events/created");
+        router.replace("/(tabs)/events/created");
+        return null;
+    }
+
+    const onSubmit = async (values: Yup.InferType<typeof EditEventSchema>) => {
+        try {
+            console.log("Creating event...", values);
+            const event = await editEvent.mutateAsync({
+                ...values,
+                startDate: new Date(values.startDate),
+                endDate: new Date(values.endDate),
+                capacity: Number(values.capacity),
+            });
+
+            console.log("Event created:", event);
+
+            router.replace("/(tabs)/profile")
+        } catch (error) {
+            console.error("Error creating event:", error);
+        }
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-                    <View style={styles.header}>
-                        <Text variant="titleMedium">Editar Evento</Text>
-                        <TouchableOpacity style={styles.imageContainer}>
-                            {image ? <Image
-                                style={styles.image}
-                                source={{
-                                    uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-                                }}
-                            />
-                                :
-                                <View
-                                    style={styles.imagePlaceholder}
-                                />}
-                            <View style={styles.imageOverlay}>
-                                <IconCamera size={30} color="#323232" />
+            <Formik
+                initialValues={event}
+                validationSchema={EditEventSchema}
+                onSubmit={onSubmit}
+            >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                    <View style={styles.content}>
+                        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+                            <View style={styles.header}>
+                                <Text variant="titleMedium">Editar Evento</Text>
+                                <TouchableOpacity style={styles.imageContainer}>
+                                    {image ? <Image
+                                        style={styles.image}
+                                        source={{
+                                            uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+                                        }}
+                                    />
+                                        :
+                                        <View
+                                            style={styles.imagePlaceholder}
+                                        />}
+                                    <View style={styles.imageOverlay}>
+                                        <IconCamera size={30} color="#323232" />
+                                    </View>
+                                </TouchableOpacity>
+
+                                <IconButton
+                                    icon="chevron-left"
+                                    iconColor="#5F19F2"
+                                    size={40}
+                                    style={{ position: "absolute", top: 0, left: 0 }}
+                                    onPress={() => router.replace("/(tabs)/events/created")}
+                                />
                             </View>
-                        </TouchableOpacity>
 
-                        <IconButton
-                            icon="chevron-left"
-                            iconColor="#5F19F2"
-                            size={40}
-                            style={{ position: "absolute", top: 0, left: 0 }}
-                            onPress={() => router.replace("/(tabs)/events/created")}
-                        />
-                    </View>
+                            <View style={styles.section}>
+                                <TextInput
+                                    label={<Text>Nombre del evento</Text>}
+                                    placeholder="Encuentro musical"
+                                    placeholderTextColor="#B0B0B0"
+                                    outlineColor="#B0B0B0"
+                                    activeOutlineColor="black"
+                                    textColor="black"
+                                    mode="outlined"
+                                    outlineStyle={{ borderRadius: 8 }}
+                                    style={styles.input}
+                                    onBlur={handleBlur('name')}
+                                    onChangeText={handleChange('name')}
+                                    value={values.name}
+                                    error={touched.name && errors.name ? true : false}
+                                />
 
-                    <View style={styles.section}>
-                        <TextInput
-                            label={<Text>Nombre del evento</Text>}
-                            value={event.name}
-                            placeholder="Encuentro musical"
-                            placeholderTextColor="#B0B0B0"
-                            outlineColor="#B0B0B0"
-                            activeOutlineColor="black"
-                            textColor="black"
-                            mode="outlined"
-                            outlineStyle={{ borderRadius: 8 }}
-                            style={styles.input}
-                        />
+                                <TextInput
+                                    label={<Text>Descripción</Text>}
+                                    placeholder="Un evento para disfrutar con..."
+                                    placeholderTextColor="#B0B0B0"
+                                    outlineColor="#B0B0B0"
+                                    activeOutlineColor="black"
+                                    textColor="black"
+                                    mode="outlined"
+                                    outlineStyle={{ borderRadius: 8 }}
+                                    style={styles.input}
+                                    onBlur={handleBlur('description')}
+                                    onChangeText={handleChange('description')}
+                                    value={values.description}
+                                    error={touched.description && errors.description ? true : false}
+                                />
 
-                        <TextInput
-                            label={<Text>Descripción</Text>}
-                            value={event.description}
-                            placeholder="Un evento para disfrutar con..."
-                            placeholderTextColor="#B0B0B0"
-                            outlineColor="#B0B0B0"
-                            activeOutlineColor="black"
-                            textColor="black"
-                            mode="outlined"
-                            outlineStyle={{ borderRadius: 8 }}
-                            style={styles.input}
-                        />
+                                <TextInput
+                                    label={<Text>Dirección</Text>}
+                                    placeholder="Avenida de América"
+                                    placeholderTextColor="#B0B0B0"
+                                    outlineColor="#B0B0B0"
+                                    activeOutlineColor="black"
+                                    textColor="black"
+                                    mode="outlined"
+                                    outlineStyle={{ borderRadius: 8 }}
+                                    style={styles.input}
+                                    onBlur={handleBlur('address.street')}
+                                    onChangeText={handleChange('address.street')}
+                                    value={values.address.street}
+                                    error={touched.address?.street && errors.address?.street ? true : false}
+                                />
 
-                        <CategoryTypeInput category={category} setCategory={setCategory} />
+                                <View style={styles.locationInput}>
+                                    <TextInput
+                                        label={<Text>Ciudad</Text>}
+                                        placeholder="Madrid"
+                                        placeholderTextColor="#B0B0B0"
+                                        outlineColor="#B0B0B0"
+                                        activeOutlineColor="black"
+                                        textColor="black"
+                                        mode="outlined"
+                                        outlineStyle={{ borderRadius: 8 }}
+                                        style={{ flex: 2 }}
+                                        onBlur={handleBlur('address.city')}
+                                        onChangeText={handleChange('address.city')}
+                                        value={values.address.city}
+                                        error={touched.address?.city && errors.address?.city ? true : false}
+                                    />
 
-                        <DateInput label="Fecha de inicio" date={startDate} setDate={setStartDate} />
+                                    <TextInput
+                                        label={<Text>Código postal</Text>}
+                                        placeholder="28002"
+                                        placeholderTextColor="#B0B0B0"
+                                        outlineColor="#B0B0B0"
+                                        activeOutlineColor="black"
+                                        textColor="black"
+                                        mode="outlined"
+                                        outlineStyle={{ borderRadius: 8 }}
+                                        style={{ flex: 1 }}
+                                        onBlur={handleBlur('address.zip')}
+                                        onChangeText={handleChange('address.zip')}
+                                        value={values.address.zip}
+                                        error={touched.address?.zip && errors.address?.zip ? true : false}
+                                    />
+                                </View>
 
-                        <DateInput label="Fecha de finalización" date={endDate} setDate={setEndDate} />
+                                <CategoryTypeInput value={values.category} onChange={handleChange('category')} />
 
-                        <NumberInput value={capacity} setValue={setCapacity} />
-                    </View>
-                </ScrollView>
+                                <DateInput label="Fecha de inicio" value={new Date(values.startDate)} onChange={(value) => handleChange('startDate')(value.toISOString())} />
 
-                <FloatingButton label="Guardar" onPress={() => router.replace("/(tabs)/events/created")} />
-            </View >
+                                <DateInput label="Fecha de finalización" value={new Date(values.endDate)} onChange={(value) => handleChange('endDate')(value.toISOString())} />
+
+                                <NumberInput value={Number(values.capacity)} onChange={(value) => handleChange('capacity')(value.toString())} style={{ marginBottom: 70 }} />
+                            </View>
+                        </ScrollView>
+
+                        <FloatingButton label="Guardar" onPress={() => router.replace("/(tabs)/events/created")} />
+                    </View >
+                )}
+            </Formik>
         </SafeAreaView>
     );
 }
@@ -161,6 +273,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     input: {
+        marginBottom: 10,
+    },
+    locationInput: {
+        flexDirection: "row",
+        gap: 10,
         marginBottom: 10,
     },
 });

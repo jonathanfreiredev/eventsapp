@@ -1,17 +1,34 @@
+import { useGetEvents } from "@/api/queries/events";
 import { CategoryCard } from "@/components/categories/CategoryCard";
 import { EventCard } from "@/components/events/EventCard";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Categories } from "@/constants/categories";
-import { EventsMock } from "@/constants/events";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { ActivityIndicator, Text } from "react-native-paper";
 
 export default function MainPageScreen() {
   const params = useLocalSearchParams();
+  const {
+    data: events,
+    isLoading,
+    isError,
+  } = useGetEvents();
 
   const selectedCategory = Categories.find((category) => category.slug === params.category);
+
+  if (isLoading) {
+    return <ActivityIndicator animating={true} />;
+  }
+
+  if (isError || !events) {
+    return <Text>Error loading events</Text>;
+  }
+
+  if (events.length === 0) {
+    return <Text>No events found</Text>;
+  }
 
   return (
     <AppLayout showHeader>
@@ -34,7 +51,7 @@ export default function MainPageScreen() {
       <View style={styles.section}>
         <Text variant="titleMedium" style={styles.sectionTitle}>Eventos - {selectedCategory?.name}</Text>
         <View style={styles.eventsSection}>
-          {EventsMock.map((event) => (
+          {events.map((event) => (
             <EventCard key={event.name} event={event} isFavourite={false} />
           ))}
         </View>
