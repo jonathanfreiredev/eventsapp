@@ -1,4 +1,4 @@
-import { UserSession } from '@/api/mutations/users';
+import { UserInfo, UserSession } from "@/types/users";
 import CryptoJS from "crypto-js";
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -35,7 +35,7 @@ export async function setStorageItemAsync(key: string, value: string | null) {
     }
 }
 
-export function useStorageState(key: string): UseStateHook<UserSession> {
+export function useStorageState(key: string): [UseStateHook<UserSession>[0], UseStateHook<UserSession>[1], (user: UserInfo) => void] {
     // Public
     const [state, setState] = useAsyncState<UserSession>();
 
@@ -84,5 +84,19 @@ export function useStorageState(key: string): UseStateHook<UserSession> {
         [key]
     );
 
-    return [state, setValue];
+    const updateToken = useCallback(
+        (user: UserInfo) => {
+            const data = {
+                accessToken: state[1]?.accessToken || "",
+                user: user,
+            };
+
+            setState(data);
+
+            setStorageItemAsync(key, JSON.stringify(data));
+        },
+        [key]
+    );
+
+    return [state, setValue, updateToken];
 }

@@ -8,7 +8,11 @@ import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
 export default function ProfileScreen() {
-  const { signOut } = useSession();
+  const { session, signOut } = useSession();
+
+  if (!session) return;
+
+  const user = session.user;
 
   return (
     <AppLayout>
@@ -23,7 +27,7 @@ export default function ProfileScreen() {
               }}
             />
           </View>
-          <Text variant="labelLarge">Jonathan Freire</Text>
+          <Text variant="labelLarge">{user.firstName} {user.lastName}</Text>
         </View>
 
         <View style={styles.section}>

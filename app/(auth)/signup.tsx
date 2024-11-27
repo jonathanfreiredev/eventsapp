@@ -3,7 +3,7 @@ import { useSession } from "@/components/common/AuthContext";
 import AuthLayout from "@/components/layouts/AuthLayout";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, TextInput } from "react-native-paper";
 import * as Yup from 'yup';
@@ -21,6 +21,17 @@ export default function Signup() {
 
     const signup = useSignup();
 
+    const onSubmit = async (values: Yup.InferType<typeof SignupSchema>) => {
+        try {
+            console.log("Creating user...")
+            const createdUser = await signup.mutateAsync(values);
+
+            signIn(createdUser);
+        } catch (error) {
+            console.log("Error creating user", error)
+        }
+    }
+
     return (
         <AuthLayout>
             <Text style={styles.greeting}>Hola! 👋</Text>
@@ -34,22 +45,13 @@ export default function Signup() {
                     password: '',
                 }}
                 validationSchema={SignupSchema}
-                onSubmit={async (values) => {
-                    try {
-                        console.log("Creating user...")
-                        const createdUser = await signup.mutateAsync(values);
-
-                        signIn(createdUser);
-                    } catch (error) {
-                        console.log("Error creating user", error)
-                    }
-                }}
+                onSubmit={onSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                     <View style={styles.form}>
                         <TextInput
                             label={<Text style={{ color: "#FFFFFF" }}>Nombre</Text>}
-                            placeholder="John Doe"
+                            placeholder="John"
                             placeholderTextColor="#B0B0B0"
                             outlineColor="#313E55"
                             activeOutlineColor="#FFFFFF"

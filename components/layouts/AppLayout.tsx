@@ -20,7 +20,7 @@ export const AppLayout = ({ children, showHeader = false }: AppLayoutProps) => {
     }, [session]);
 
     if (!session) {
-        return null;
+        return;
     }
 
     const user = session.user;

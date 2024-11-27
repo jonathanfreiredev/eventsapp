@@ -19,6 +19,17 @@ export default function Login() {
 
   const login = useLogin();
 
+  const onSubmit = async (values: Yup.InferType<typeof LoginSchema>) => {
+    try {
+      console.log("Logging in...")
+      const user = await login.mutateAsync(values);
+
+      signIn(user);
+    } catch (error) {
+      console.log("Error logging in", error)
+    }
+  }
+
   return (
     <AuthLayout>
       <Text style={styles.greeting}>Bienvenido de nuevo! 👋</Text>
@@ -29,16 +40,7 @@ export default function Login() {
           password: '',
         }}
         validationSchema={LoginSchema}
-        onSubmit={async (values) => {
-          try {
-            console.log("Login user...")
-            const user = await login.mutateAsync(values);
-
-            signIn(user);
-          } catch (error) {
-            console.log("Error creating user", error)
-          }
-        }}
+        onSubmit={onSubmit}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <View style={styles.form}>
