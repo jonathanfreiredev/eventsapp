@@ -53,12 +53,54 @@ export const useEditProfile = () => {
 
             const accessToken = getAccessToken(session);
 
-            const { data } = await apiClient.put('/users/update/me', user, {
+            const { data } = await apiClient.put('/users/me', user, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             return data;
+        },
+    });
+}
+
+export const useFavouriteEvent = () => {
+    const { session } = useSession();
+
+    return useMutation<void, Error, string>({
+        mutationKey: ['favouriteEvent'],
+        mutationFn: async (eventId: string): Promise<void> => {
+            if (!session) {
+                throw new Error("You must be logged in to favourite an event");
+            }
+
+            const accessToken = getAccessToken(session);
+
+            await apiClient.post(`/users/favourite/${eventId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+        },
+    });
+}
+
+export const useUnFavouriteEvent = () => {
+    const { session } = useSession();
+
+    return useMutation<void, Error, string>({
+        mutationKey: ['unfavouriteEvent'],
+        mutationFn: async (eventId: string): Promise<void> => {
+            if (!session) {
+                throw new Error("You must be logged in to unfavourite an event");
+            }
+
+            const accessToken = getAccessToken(session);
+
+            await apiClient.delete(`/users/favourite/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
         },
     });
 }

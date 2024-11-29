@@ -1,12 +1,26 @@
+import { useGetFavouriteEvents } from "@/api/queries/users";
 import { EventCard } from "@/components/events/EventCard";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { EventsMock } from "@/constants/events";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import { ActivityIndicator, IconButton, Text } from "react-native-paper";
 
 export default function EventsFavouritesScreen() {
+    const {
+        data: events,
+        isLoading,
+        isError,
+    } = useGetFavouriteEvents();
+
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (isError || !events) {
+        return <Text>Error loading events</Text>;
+    }
+
     return (
         <AppLayout>
             <View style={styles.content}>
@@ -19,14 +33,14 @@ export default function EventsFavouritesScreen() {
                             iconColor="#5F19F2"
                             size={40}
                             style={{ position: "absolute", top: 0, left: 0 }}
-                            onPress={() => router.replace("/(tabs)/profile")}
+                            onPress={() => router.navigate("/(tabs)/profile")}
                         />
                     </View>
 
                     <View style={styles.eventsSection}>
-                        {EventsMock.map((event) => (
-                            <EventCard key={event.name} event={event} isFavourite={false} />
-                        ))}
+                        {events.length > 0 ? events.map((event) => (
+                            <EventCard key={event.name} event={event} />
+                        )) : <Text>No tienes eventos favoritos</Text>}
                     </View>
                 </ScrollView>
             </View>

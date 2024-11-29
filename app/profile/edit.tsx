@@ -5,9 +5,9 @@ import { ImageInput } from "@/components/common/ImageInput";
 import { IconCamera } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, Modal, Portal, Text, TextInput } from "react-native-paper";
+import React, { useEffect } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Avatar, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Yup from 'yup';
 
@@ -15,39 +15,46 @@ const EditProfileSchema = Yup.object().shape({
     firstName: Yup.string().required(),
     lastName: Yup.string().required(),
     email: Yup.string().email().required(),
+    image: Yup.string().nullable(),
 });
 
 export default function EditProfileScreen() {
-    const [openedModal, setOpenedModal] = useState(false);
-    const { session, updateSession } = useSession();
+    const { session, isLoading, updateSession } = useSession();
 
     const editProfile = useEditProfile();
 
     useEffect(() => {
-        if (!session) {
+        if (!session && !isLoading) {
             router.navigate("/(auth)/login");
         }
-    }, [session]);
+    }, [session, isLoading]);
 
     const onSubmit = async (values: Yup.InferType<typeof EditProfileSchema>) => {
         try {
             console.log("Edit profile...", values)
 
-            const user = await editProfile.mutateAsync(values);
+            const userData = await editProfile.mutateAsync(values);
 
             updateSession({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                image: userData.image,
             });
 
-            router.replace("/(tabs)/profile")
+            router.navigate("/(tabs)/profile")
         } catch (error) {
             console.log("Error creating user", error)
         }
     }
 
-    if (!session) return;
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (!session) return <Text variant="bodyLarge">
+        You need to be logged in to access this page
+    </Text>
 
     const user = session.user;
 
@@ -58,6 +65,7 @@ export default function EditProfileScreen() {
                     firstName: user.firstName,
                     lastName: user.lastName || "",
                     email: user.email,
+                    image: user.image,
                 }}
                 validationSchema={EditProfileSchema}
                 onSubmit={onSubmit}
@@ -67,27 +75,35 @@ export default function EditProfileScreen() {
                         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
                             <View style={styles.header}>
                                 <Text variant="titleMedium">Editar perfil</Text>
-                                <TouchableOpacity style={styles.imageContainer}>
-                                    <Image
+                                <ImageInput
+                                    name="profile-image"
+                                    style={styles.imageContainer}
+                                    onChange={handleChange('image')}
+                                >
+                                    {values.image ? <Avatar.Image
                                         style={styles.image}
+                                        size={80}
                                         source={{
-                                            uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+                                            uri: values.image,
                                         }}
-                                    />
+                                    /> : <Avatar.Text
+                                        style={styles.image}
+                                        size={80}
+                                        label={`${values.firstName[0]}${values.lastName[0] || ""}`}
+                                    />}
                                     <View style={styles.imageOverlay}>
                                         <IconCamera size={30} color="#323232" />
                                     </View>
-                                </TouchableOpacity>
+                                </ImageInput>
 
                                 <IconButton
                                     icon="chevron-left"
                                     iconColor="#5F19F2"
                                     size={40}
                                     style={{ position: "absolute", top: 0, left: 0 }}
-                                    onPress={() => setOpenedModal(true)}
+                                    onPress={() => router.navigate("/(tabs)/profile")}
                                 />
                             </View>
-
 
                             <View style={styles.section}>
                                 <TextInput
@@ -140,28 +156,6 @@ export default function EditProfileScreen() {
                             </View>
 
                         </ScrollView>
-
-
-                        <Portal>
-                            <Modal visible={openedModal} onDismiss={() => setOpenedModal(false)} contentContainerStyle={styles.modal}>
-                                <View style={styles.form}>
-                                    <Text variant="titleMedium">Adjunta una imagen</Text>
-
-                                    <ImageInput />
-
-                                    <TouchableOpacity
-                                        style={styles.buttonForm}
-                                        onPress={() => {
-                                            setOpenedModal(false)
-
-                                            router.replace("/(tabs)/profile")
-                                        }}>
-                                        <Text variant="bodyLarge" style={styles.buttonFormText}>Guardar</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </Modal>
-                        </Portal>
-
                         <FloatingButton label="Guardar" onPress={() => handleSubmit()} />
                     </View>
                 )}

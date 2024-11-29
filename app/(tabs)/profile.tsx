@@ -4,13 +4,21 @@ import { ProfileActionButton } from "@/components/profile/ProfileActionButton";
 import { IconBookmark, IconLogout, IconPlus, IconUser } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Avatar, Text } from "react-native-paper";
 
 export default function ProfileScreen() {
-  const { session, signOut } = useSession();
+  const { session, isLoading, signOut } = useSession();
 
-  if (!session) return;
+  if (isLoading) {
+    return <ActivityIndicator animating={true} />;
+  }
+
+  if (!session) {
+    return <Text variant="bodyLarge">
+      You need to be logged in to access this page
+    </Text>;
+  }
 
   const user = session.user;
 
@@ -20,20 +28,25 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <Text variant="titleMedium">Mi perfil</Text>
           <View style={styles.imageContainer}>
-            <Image
+            {user.image ? <Avatar.Image
               style={styles.image}
+              size={80}
               source={{
-                uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+                uri: user.image,
               }}
-            />
+            /> : <Avatar.Text
+              style={styles.image}
+              size={80}
+              label={`${user.firstName[0]}${user.lastName[0] || ""}`}
+            />}
           </View>
           <Text variant="labelLarge">{user.firstName} {user.lastName}</Text>
         </View>
 
         <View style={styles.section}>
-          <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => router.replace("/(tabs)/profile/edit")} />
-          <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => router.replace("/(tabs)/events/create")} />
-          <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => router.replace("/(tabs)/profile/events-favourites")} />
+          <ProfileActionButton icon={IconUser} text="Editar perfil" onPress={() => router.navigate("/profile/edit")} />
+          <ProfileActionButton icon={IconPlus} text="Crear un evento" onPress={() => router.navigate("/events/create")} />
+          <ProfileActionButton icon={IconBookmark} text="Eventos favoritos" onPress={() => router.navigate("/profile/events-favourites")} />
           <ProfileActionButton icon={IconLogout} text="Cerrar sesión" variant="red" onPress={() => signOut()} />
         </View>
       </ScrollView>

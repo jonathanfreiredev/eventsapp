@@ -10,13 +10,15 @@ import { ActivityIndicator, Text } from "react-native-paper";
 
 export default function MainPageScreen() {
   const params = useLocalSearchParams();
+  const category = params.category as string;
+
   const {
     data: events,
     isLoading,
     isError,
-  } = useGetEvents();
+  } = useGetEvents(category);
 
-  const selectedCategory = Categories.find((category) => category.slug === params.category);
+  const selectedCategory = Categories.find((c) => c.slug === category);
 
   if (isLoading) {
     return <ActivityIndicator animating={true} />;
@@ -26,10 +28,6 @@ export default function MainPageScreen() {
     return <Text>Error loading events</Text>;
   }
 
-  if (events.length === 0) {
-    return <Text>No events found</Text>;
-  }
-
   return (
     <AppLayout showHeader>
       <View style={styles.section}>
@@ -37,12 +35,14 @@ export default function MainPageScreen() {
           <Text variant="titleMedium" style={styles.sectionTitle}>
             Categorías
           </Text>
-          <Text variant="titleSmall" style={{ color: "#B0B0B0" }} onPress={() => router.push("/(tabs)/categories")}>Ver todo</Text>
+          <Text variant="titleSmall" style={{ color: "#B0B0B0" }} onPress={() => router.navigate("/(tabs)/categories")}>Ver todo</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Categories.map((category) => (
             <View key={category.name} style={styles.categoryCard}>
-              <CategoryCard category={category} isSelected={category.slug === selectedCategory?.slug} iconSize={40} />
+              <CategoryCard category={category} isSelected={category.slug === selectedCategory?.slug} iconSize={40} onPress={() => {
+                router.navigate(`/(tabs)?category=${category.slug}`);
+              }} />
             </View>
           ))}
         </ScrollView>
@@ -51,9 +51,9 @@ export default function MainPageScreen() {
       <View style={styles.section}>
         <Text variant="titleMedium" style={styles.sectionTitle}>Eventos - {selectedCategory?.name}</Text>
         <View style={styles.eventsSection}>
-          {events.map((event) => (
-            <EventCard key={event.name} event={event} isFavourite={false} />
-          ))}
+          {events.length > 0 ? events.map((event) => (
+            <EventCard key={event.name} event={event} />
+          )) : <Text>No hay eventos disponibles</Text>}
         </View>
       </View>
     </AppLayout>

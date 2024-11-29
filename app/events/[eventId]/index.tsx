@@ -1,26 +1,47 @@
+import { useLeaveEvent, useParticipateInEvent } from "@/api/mutations/events";
+import { useGetEvent } from "@/api/queries/events";
 import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
-import { EventsMock } from "@/constants/events";
 import { IconBookmark, IconCalendar, IconMapPin } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import { ActivityIndicator, IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Event } from "@/types/events";
 
 export default function EventScreen() {
-    const [participating, setParticipating] = React.useState(false);
     const { eventId } = useLocalSearchParams();
-    const { session } = useSession();
+    const { session, isLoading: isLoadingSession } = useSession();
+
+    const participateInEvent = useParticipateInEvent();
+    const leaveEvent = useLeaveEvent();
+
+    const {
+        data: event,
+        isLoading,
+        isError,
+        refetch,
+    } = useGetEvent(eventId as string);
 
     useEffect(() => {
-        if (!session) {
+        if (!session && !isLoadingSession) {
             router.navigate("/(auth)/login");
         }
-    }, [session]);
+    }, [session, isLoadingSession]);
 
-    const event = EventsMock.find((event) => event.id === eventId) as Event;
+    if (isLoadingSession || isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (!session) {
+        return <Text variant="bodyLarge">
+            You need to be logged in to access this page
+        </Text>
+    }
+
+    if (isError || !event) {
+        return <Text>Error loading event</Text>;
+    }
 
     const eventDuration = (event.endDate.getTime() - event.startDate.getTime()) / 60000;
 
@@ -32,14 +53,22 @@ export default function EventScreen() {
             <View style={styles.content}>
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
                     <View style={styles.cover}>
-                        <Image source={event.image} resizeMode="cover" style={styles.image} />
+                        {event.image ?
+                            <Image source={{
+                                uri: event.image,
+                            }}
+                                resizeMode="cover"
+                                style={styles.image}
+                            />
+                            : <View style={styles.imagePlaceholder} />
+                        }
 
                         <IconButton
                             icon="chevron-left"
                             iconColor="white"
                             size={40}
                             style={{ position: "absolute", top: 30, left: 10 }}
-                            onPress={() => router.replace("/(tabs)/events")}
+                            onPress={() => router.navigate("/(tabs)/events")}
                         />
                     </View>
 
@@ -52,7 +81,7 @@ export default function EventScreen() {
                         </View>
                         <View style={styles.sectionLinks}>
                             <TouchableOpacity onPress={() => router.navigate({
-                                pathname: "/(tabs)/events/[eventId]/participants",
+                                pathname: "/events/[eventId]/participants",
                                 params: {
                                     eventId: event.id,
                                 },
@@ -60,7 +89,7 @@ export default function EventScreen() {
                                 <Text variant="titleMedium" style={styles.participants}>{event.numParticipants} participants</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => router.navigate({
-                                pathname: "/(tabs)/events/[eventId]/comments",
+                                pathname: "/events/[eventId]/comments",
                                 params: {
                                     eventId: event.id,
                                 },
@@ -90,9 +119,20 @@ export default function EventScreen() {
                 </ScrollView>
 
                 <FloatingButton
-                    label={participating ? "Participando" : "Participar"}
-                    backgroundColor={participating ? "#16d216" : "default"}
-                    onPress={() => setParticipating(!participating)}
+                    label={event.participating ? "Participando" : "Participar"}
+                    backgroundColor={event.participating ? "#5CB85C" : "default"}
+                    onPress={async () => {
+                        try {
+                            if (event.participating) {
+                                await leaveEvent.mutateAsync(event.id);
+                            } else {
+                                await participateInEvent.mutateAsync(event.id);
+                            }
+                            await refetch();
+                        } catch (error: any) {
+                            console.error(error.message);
+                        }
+                    }}
                 />
             </View>
         </SafeAreaView>
@@ -120,6 +160,11 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         height: "100%",
+    },
+    imagePlaceholder: {
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#B0B0B0",
     },
     eventContent: {
         padding: 20,

@@ -3,19 +3,24 @@ import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSession } from "../common/AuthContext";
+import { ActivityIndicator } from "react-native-paper";
 
 interface AuthLayoutProps {
     children: React.ReactNode;
 }
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
-    const { session } = useSession();
+    const { session, isLoading } = useSession();
 
     useEffect(() => {
-        if (session) {
+        if (!isLoading && session) {
             router.navigate("/(tabs)?category=music");
         }
-    }, [session]);
+    }, [session, isLoading]);
+
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
 
     return <SafeAreaView style={styles.container}>
         {children}

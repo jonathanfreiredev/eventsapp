@@ -1,3 +1,4 @@
+import { useGetEventParticipants } from "@/api/queries/events";
 import { ParticipantItem } from "@/components/events/ParticipantItem";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { EventsMock } from "@/constants/events";
@@ -5,15 +6,24 @@ import { UsersMock } from "@/constants/users";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import { ActivityIndicator, IconButton, Text } from "react-native-paper";
 
 export default function EventParticipantsScreen() {
     const { eventId } = useLocalSearchParams();
 
-    const event = EventsMock.find((event) => event.id === eventId);
+    const {
+        data: participants,
+        isLoading,
+        isError,
+        refetch,
+    } = useGetEventParticipants(eventId as string);
 
-    if (!event) {
-        return router.replace("/(tabs)/events/created");
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (isError || !participants) {
+        return <Text>Error loading event</Text>;
     }
 
     return (
@@ -29,16 +39,16 @@ export default function EventParticipantsScreen() {
                             size={40}
                             style={{ position: "absolute", top: 0, left: 0 }}
                             onPress={() => router.navigate({
-                                pathname: "/(tabs)/events/[eventId]",
+                                pathname: "/events/[eventId]",
                                 params: {
-                                    eventId: event.id,
+                                    eventId: eventId as string,
                                 },
                             })}
                         />
                     </View>
 
                     <View style={styles.section}>
-                        {UsersMock.map((participant) => (
+                        {participants.map((participant) => (
                             <ParticipantItem key={participant.id} participant={participant} />
                         ))}
                     </View>

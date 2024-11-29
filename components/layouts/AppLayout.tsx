@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Avatar } from "react-native-paper";
+import { ActivityIndicator, Avatar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSession } from "../common/AuthContext";
 import { useEffect } from "react";
@@ -11,16 +11,22 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ children, showHeader = false }: AppLayoutProps) => {
-    const { session } = useSession();
+    const { session, isLoading } = useSession();
 
     useEffect(() => {
-        if (!session) {
-            router.replace("/(auth)/login");
+        if (!isLoading && !session) {
+            router.navigate("/(auth)/login");
         }
-    }, [session]);
+    }, [session, isLoading]);
+
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
 
     if (!session) {
-        return;
+        return <Text variant="bodyLarge">
+        You need to be logged in to access this page
+      </Text>
     }
 
     const user = session.user;
@@ -36,7 +42,7 @@ export const AppLayout = ({ children, showHeader = false }: AppLayoutProps) => {
                 {user.image ? <Avatar.Image
                     size={50}
                     source={{
-                        uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+                        uri: user.image,
                     }}
                 /> : <Avatar.Text size={50} label={`${user.firstName[0]}${user.lastName[0] || ""}`} />}
             </View>}

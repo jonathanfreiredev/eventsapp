@@ -1,76 +1,59 @@
-import { CloudinaryClient } from "@/api/cloudinary/client";
-import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { Image, View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { useUploadImage } from '@/api/mutations/images';
+import * as ImagePicker from 'expo-image-picker';
+import { Platform, StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 
-export const ImageInput = () => {
-    const [image, setImage] = useState<string | null>(null);
-    const [uploading, setUploading] = useState(false);
+interface ImageInputProps {
+    name: string;
+    onChange: (value: string) => void;
+    style: StyleProp<ViewStyle>
+    children: React.ReactNode;
+}
+
+export const ImageInput = ({ name, onChange, style, children }: ImageInputProps) => {
+    const uploadImage = useUploadImage();
 
     const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
-    };
-
-    const uploadImage = async () => {
-        if (!image) {
-            console.log("No image selected");
-            return;
-        }
-
-        setUploading(true);
-
         try {
-            const options = {
-                upload_preset: "<your_upload_preset>",
-                unsigned: true,
-            };
-
-            const response = await upload(CloudinaryClient, {
-                file: image, // Ruta del archivo local
-                options,
-                callback: (error, result) => {
-                    if (error) {
-                        console.error("Upload error:", error);
-                    } else if (result) {
-                        console.log("Upload successful", `URL: ${result.secure_url}`);
-                    }
-                },
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+                base64: true,
             });
 
-            console.log("Response:", response);
-        } catch (error: any) {
-            console.error("Error:", error?.message);
-        } finally {
-            setUploading(false);
+            if (!result.canceled) {
+                const formData = new FormData();
+
+                const mimeType = result.assets[0].mimeType || 'image/jpeg';
+                const format = mimeType.split('/')[1] || 'jpg';
+
+                if (Platform.OS === 'web') {
+                    const response = await fetch(result.assets[0].uri);
+                    const blob = await response.blob();
+
+                    formData.append("image", blob, `${name}.${format}`);
+                } else {
+                    //@ts-ignore-next-line
+                    formData.append('image', {
+                        uri: result.assets[0].uri,
+                        type: mimeType,
+                        name: `${name}.${format}`,
+                    });
+                }
+
+                const image = await uploadImage.mutateAsync(formData);
+
+                onChange(image.url);
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            {image && (
-                <Image
-                    source={{ uri: image }}
-                    style={{ width: 200, height: 200, marginBottom: 20 }}
-                />
-            )}
-            <Button onPress={pickImage}>
-                <Text>Choose Image</Text>
-            </Button>
-            <Button onPress={uploadImage}>
-                Upload Image
-            </Button>
-            {uploading && (
-                <Text style={{ marginTop: 20 }}>Uploading image, please wait...</Text>
-            )}
-        </View>
+        <TouchableOpacity style={style} onPress={pickImage}>
+            {children}
+        </TouchableOpacity>
     );
-}
+};

@@ -71,3 +71,45 @@ export const useEditEvent = () => {
     },
   });
 }
+
+export const useParticipateInEvent = () => {
+  const { session } = useSession();
+
+  return useMutation<void, Error, string>({
+    mutationKey: ['participateInEvent'],
+    mutationFn: async (eventId: string): Promise<void> => {
+      if (!session) {
+        throw new Error("You must be logged in to participate in events");
+      }
+
+      const accessToken = getAccessToken(session);
+
+      await apiClient.post(`/events/${eventId}/participate`, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
+  });
+}
+
+export const useLeaveEvent = () => {
+  const { session } = useSession();
+
+  return useMutation<void, Error, string>({
+    mutationKey: ['leaveEvent'],
+    mutationFn: async (eventId: string): Promise<void> => {
+      if (!session) {
+        throw new Error("You must be logged in to leave events");
+      }
+
+      const accessToken = getAccessToken(session);
+
+      await apiClient.delete(`/events/${eventId}/participate`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    },
+  });
+}

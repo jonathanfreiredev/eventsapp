@@ -1,6 +1,5 @@
 import { Category } from "@/types/categories";
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
 
@@ -8,11 +7,12 @@ interface CategoryCardProps {
     category: Category;
     isSelected?: boolean;
     iconSize: number;
+    onPress: () => void;
 }
 
-export const CategoryCard = ({ category, isSelected, iconSize }: CategoryCardProps) => {
+export const CategoryCard = ({ category, isSelected, iconSize, onPress }: CategoryCardProps) => {
     const Icon = category.icon;
-    return <TouchableOpacity style={styles().container} onPress={() => router.push(`/(tabs)?category=${category.slug}`)}>
+    return <TouchableOpacity style={styles().container} onPress={() => onPress()}>
         <LinearGradient
             colors={category.backgroundColor}
             style={styles(isSelected, category.backgroundColor).backgroundContainer}

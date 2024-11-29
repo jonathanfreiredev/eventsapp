@@ -10,12 +10,14 @@ export type Address = {
 export type Event = {
     id: string;
     name: string;
-    description?: string;
+    description?: string | null;
+    image?: string | null;
     startDate: Date;
     endDate: Date;
     capacity: number;
-    numParticipants: number;
     category: CategoryType;
+    organiserId: string;
     address: Address;
-    image: any;
+    numParticipants: number;
+    participating: boolean;
 }

@@ -1,6 +1,7 @@
 import { CategoryCard } from "@/components/categories/CategoryCard";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Categories } from "@/constants/categories";
+import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
@@ -13,7 +14,9 @@ export default function CategoriesScreen() {
         <View style={styles.categoriesGrid}>
           {Categories.map((category) => (
             <View key={category.name} style={styles.categoryCard}>
-              <CategoryCard category={category} iconSize={60} />
+              <CategoryCard category={category} iconSize={60} onPress={() => {
+                router.navigate(`/(tabs)?category=${category.slug}`);
+              }} />
             </View>
           ))}
         </View>

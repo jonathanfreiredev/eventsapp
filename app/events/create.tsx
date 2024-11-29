@@ -3,14 +3,16 @@ import { useSession } from "@/components/common/AuthContext";
 import { CategoryTypeInput } from "@/components/common/CategoryTypeInput";
 import { DateInput } from "@/components/common/DateInput";
 import { FloatingButton } from "@/components/common/FloatingButton";
+import { ImageInput } from "@/components/common/ImageInput";
 import { NumberInput } from "@/components/common/NumberInput";
 import { CategoryType } from "@/types/categories";
 import { IconCamera } from "@tabler/icons-react-native";
+import { isLoading } from "expo-font";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import React, { useEffect } from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Yup from 'yup';
 
@@ -21,6 +23,7 @@ const CreateEventSchema = Yup.object().shape({
     endDate: Yup.date().required(),
     capacity: Yup.number().required(),
     category: Yup.string().oneOf(Object.values(CategoryType)).required(),
+    image: Yup.string().nullable(),
     address: Yup.object().shape({
         street: Yup.string().required(),
         city: Yup.string().required(),
@@ -30,34 +33,38 @@ const CreateEventSchema = Yup.object().shape({
 });
 
 export default function CreateEventScreen() {
-    const [image, setImage] = useState<string | null>(null);
-
     const createEvent = useCreateEvent();
-    const { session } = useSession();
+    const { session, isLoading } = useSession();
 
     useEffect(() => {
-        if (!session) {
+        if (!isLoading && !session) {
             router.navigate("/(auth)/login");
         }
-    }, [session]);
+    }, [session, isLoading]);
 
     const onSubmit = async (values: Yup.InferType<typeof CreateEventSchema>) => {
         try {
             console.log("Creating event...", values);
-            const event = await createEvent.mutateAsync({
+            await createEvent.mutateAsync({
                 ...values,
                 startDate: new Date(values.startDate),
                 endDate: new Date(values.endDate),
                 capacity: Number(values.capacity),
             });
 
-            console.log("Event created:", event);
-
-            router.replace("/(tabs)/profile")
+            router.navigate("/(tabs)/profile")
         } catch (error) {
             console.error("Error creating event:", error);
         }
     }
+
+    if (isLoading) {
+        return <ActivityIndicator animating={true} />;
+    }
+
+    if (!session) return <Text variant="bodyLarge">
+        You need to be logged in to access this page
+    </Text>
 
     return (
         <SafeAreaView style={styles.container}>
@@ -69,6 +76,7 @@ export default function CreateEventScreen() {
                     endDate: new Date(),
                     capacity: 10,
                     category: CategoryType.Music,
+                    image: null,
                     address: {
                         street: "",
                         city: "",
@@ -84,11 +92,15 @@ export default function CreateEventScreen() {
                         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
                             <View style={styles.header}>
                                 <Text variant="titleMedium">Crear Evento</Text>
-                                <TouchableOpacity style={styles.imageContainer}>
-                                    {image ? <Image
+                                <ImageInput
+                                    name="event"
+                                    style={styles.imageContainer}
+                                    onChange={handleChange('image')}
+                                >
+                                    {values.image ? <Image
                                         style={styles.image}
                                         source={{
-                                            uri: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
+                                            uri: values.image,
                                         }}
                                     />
                                         :
@@ -98,14 +110,14 @@ export default function CreateEventScreen() {
                                     <View style={styles.imageOverlay}>
                                         <IconCamera size={30} color="#323232" />
                                     </View>
-                                </TouchableOpacity>
+                                </ImageInput>
 
                                 <IconButton
                                     icon="chevron-left"
                                     iconColor="#5F19F2"
                                     size={40}
                                     style={{ position: "absolute", top: 0, left: 0 }}
-                                    onPress={() => router.replace("/(tabs)/profile")}
+                                    onPress={() => router.navigate("/(tabs)/profile")}
                                 />
                             </View>
 

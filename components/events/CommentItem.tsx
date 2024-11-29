@@ -1,14 +1,40 @@
+import { useReplyComment } from "@/api/mutations/comments";
 import { Comment } from "@/types/comments";
+import { Formik } from "formik";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Avatar, Divider, Modal, Portal, Text, TextInput } from "react-native-paper";
+import * as Yup from 'yup';
+
+const ReplyComment = Yup.object().shape({
+    content: Yup.string().required("El comentario es obligatorio"),
+});
 
 interface CommentItemProps {
-    comment: Comment
+    comment: Comment,
+    refetch: () => Promise<void>,
 }
 
-export const CommentItem = ({ comment }: CommentItemProps) => {
+export const CommentItem = ({ comment, refetch }: CommentItemProps) => {
     const [openedModal, setOpenedModal] = useState(false);
+
+    const replyComment = useReplyComment();
+
+    const onSubmit = async (values: Yup.InferType<typeof ReplyComment>) => {
+        console.log(values)
+        try {
+            await replyComment.mutateAsync({
+                ...values,
+                commentId: comment.id,
+            });
+
+            await refetch();
+
+            setOpenedModal(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return <View style={styles.container}>
         <View style={styles.comment}>
@@ -42,24 +68,39 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
 
         <Portal>
             <Modal visible={openedModal} onDismiss={() => setOpenedModal(false)} contentContainerStyle={styles.modal}>
-                <View style={styles.replyForm}>
-                    <Text variant="titleMedium">Responde al comentario</Text>
-                    <TextInput
-                        label={<Text>Respuesta</Text>}
-                        outlineColor="#B0B0B0"
-                        multiline
-                        activeOutlineColor="black"
-                        textColor="black"
-                        mode="outlined"
-                        outlineStyle={{ borderRadius: 8 }}
-                    />
+                <Formik
+                    initialValues={{
+                        content: "",
+                    }}
+                    validationSchema={ReplyComment}
+                    onSubmit={onSubmit}
+                >
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
+                        <View style={styles.replyForm}>
+                            <Text variant="titleMedium">Responde al comentario</Text>
+                            <TextInput
+                                label={<Text>Respuesta</Text>}
+                                outlineColor="#B0B0B0"
+                                multiline
+                                activeOutlineColor="black"
+                                textColor="black"
+                                mode="outlined"
+                                outlineStyle={{ borderRadius: 8 }}
+                                onBlur={handleBlur('content')}
+                                onChangeText={handleChange('content')}
+                                value={values.content}
+                                error={touched.content && errors.content ? true : false}
+                            />
 
-                    <TouchableOpacity
-                        style={styles.buttonForm}
-                        onPress={() => setOpenedModal(false)}>
-                        <Text variant="bodyLarge" style={styles.buttonFormText}>Guardar</Text>
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity
+                                style={styles.buttonForm}
+                                disabled={isSubmitting}
+                                onPress={() => { handleSubmit() }}>
+                                <Text variant="bodyLarge" style={styles.buttonFormText}>Guardar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </Formik>
             </Modal>
         </Portal>
     </View>
