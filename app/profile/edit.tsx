@@ -31,7 +31,7 @@ export default function EditProfileScreen() {
 
     const onSubmit = async (values: Yup.InferType<typeof EditProfileSchema>) => {
         try {
-            console.log("Edit profile...", values)
+            console.log("Edit profile...")
 
             const userData = await editProfile.mutateAsync(values);
 

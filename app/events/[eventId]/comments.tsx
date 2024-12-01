@@ -50,7 +50,6 @@ export default function EventCommentsScreen() {
     }
 
     const onSubmit = async (values: Yup.InferType<typeof CreateEventComment>) => {
-        console.log(values)
         try {
             await createEventComment.mutateAsync({
                 ...values,

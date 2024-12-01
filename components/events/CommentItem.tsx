@@ -21,7 +21,6 @@ export const CommentItem = ({ comment, refetch }: CommentItemProps) => {
     const replyComment = useReplyComment();
 
     const onSubmit = async (values: Yup.InferType<typeof ReplyComment>) => {
-        console.log(values)
         try {
             await replyComment.mutateAsync({
                 ...values,

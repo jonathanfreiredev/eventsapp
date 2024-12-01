@@ -66,15 +66,13 @@ export default function EditEventScreen() {
 
     const onSubmit = async (values: Yup.InferType<typeof EditEventSchema>) => {
         try {
-            console.log("Creating event...", values);
+            console.log("Creating event...");
             const event = await editEvent.mutateAsync({
                 ...values,
                 startDate: new Date(values.startDate),
                 endDate: new Date(values.endDate),
                 capacity: Number(values.capacity),
             });
-
-            console.log("Event created:", event);
 
             router.navigate("/(tabs)/events?tab=created")
         } catch (error) {
