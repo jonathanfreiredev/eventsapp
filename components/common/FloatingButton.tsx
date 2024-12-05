@@ -5,15 +5,17 @@ interface FloatingButtonProps {
     onPress: () => void;
     label: string;
     backgroundColor?: string | "default";
+    disabled?: boolean;
 }
 
-export const FloatingButton = ({ label, onPress, backgroundColor = "default" }: FloatingButtonProps) => {
+export const FloatingButton = ({ label, onPress, backgroundColor = "default", disabled = false }: FloatingButtonProps) => {
     const styles = useStyles(backgroundColor);
 
     return (
         <View style={styles.buttonSection}>
             <TouchableOpacity
                 style={styles.button}
+                disabled={disabled}
                 onPress={onPress}>
                 <Text variant="bodyLarge" style={styles.buttonText}>{label}</Text>
             </TouchableOpacity>

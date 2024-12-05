@@ -1,19 +1,20 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleProp, StyleSheet, TextInput, View } from "react-native";
 import { Text } from "react-native-paper";
 
 interface NumberInputProps {
     value: number;
-    setValue: (value: number) => void;
+    onChange: (value: number) => void;
+    style?: StyleProp<any>;
 }
 
-export const NumberInput = ({ value, setValue }: NumberInputProps) => {
-    return <View style={styles.inputContainer}>
+export const NumberInput = ({ value, onChange, style }: NumberInputProps) => {
+    return <View style={[styles.inputContainer, style]}>
         <Text>Máximo n° de participantes</Text>
         <TextInput
             value={value.toString()}
             onChangeText={(text) => { 
-                if (isNaN(parseInt(text))) setValue(0);
-                else setValue(parseInt(text)) 
+                if (isNaN(parseInt(text))) onChange(0);
+                else onChange(parseInt(text));
             }}
             keyboardType="number-pad"
             style={styles.input}
@@ -25,6 +26,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: "column",
         gap: 5,
+        marginBottom: 70,
     },
     input: {
         marginBottom: 10,

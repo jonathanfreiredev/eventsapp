@@ -2,7 +2,7 @@ import { apiClient } from "@/api/client";
 import { useSession } from "@/components/common/AuthContext";
 import { User, UserSession } from "@/types/users";
 import { useMutation } from "@tanstack/react-query";
-import CryptoJS from "crypto-js";
+import { getAccessToken } from "../lib/getAccessToken";
 
 export type SignupInput = {
     firstName: string;
@@ -44,8 +44,6 @@ export const useLogin = () => {
 export const useEditProfile = () => {
     const { session } = useSession();
 
-    const code = process.env.SECRET || "";
-
     return useMutation<User, Error, EditProfileInput>({
         mutationKey: ['editProfile'],
         mutationFn: async (user: EditProfileInput): Promise<User> => {
@@ -53,14 +51,56 @@ export const useEditProfile = () => {
                 throw new Error("You must be logged in to edit your profile");
             }
 
-            const accessToken = CryptoJS.AES.decrypt(session.accessToken, code).toString(CryptoJS.enc.Utf8);
+            const accessToken = getAccessToken(session);
 
-            const { data } = await apiClient.put('/users/update/me', user, {
+            const { data } = await apiClient.put('/users/me', user, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             return data;
+        },
+    });
+}
+
+export const useFavouriteEvent = () => {
+    const { session } = useSession();
+
+    return useMutation<void, Error, string>({
+        mutationKey: ['favouriteEvent'],
+        mutationFn: async (eventId: string): Promise<void> => {
+            if (!session) {
+                throw new Error("You must be logged in to favourite an event");
+            }
+
+            const accessToken = getAccessToken(session);
+
+            await apiClient.post(`/users/favourite/${eventId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+        },
+    });
+}
+
+export const useUnFavouriteEvent = () => {
+    const { session } = useSession();
+
+    return useMutation<void, Error, string>({
+        mutationKey: ['unfavouriteEvent'],
+        mutationFn: async (eventId: string): Promise<void> => {
+            if (!session) {
+                throw new Error("You must be logged in to unfavourite an event");
+            }
+
+            const accessToken = getAccessToken(session);
+
+            await apiClient.delete(`/users/favourite/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
         },
     });
 }

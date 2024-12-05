@@ -5,11 +5,11 @@ import { Text } from "react-native-paper";
 
 interface DateInputProps {
     label: string;
-    date: Date;
-    setDate: (date: Date) => void;
+    value: Date;
+    onChange: (date: Date) => void;
 }
 
-export const DateInput = ({label, date, setDate}: DateInputProps) => {
+export const DateInput = ({label, value, onChange}: DateInputProps) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
@@ -22,7 +22,7 @@ export const DateInput = ({label, date, setDate}: DateInputProps) => {
     };
 
     const handleConfirm = (newDate: Date) => {
-        setDate(newDate);
+        onChange(newDate);
         hideDatePicker();
     };
 
@@ -35,8 +35,7 @@ export const DateInput = ({label, date, setDate}: DateInputProps) => {
     }
 
     const handleTimeConfirm = (newDate: any) => {
-        console.log(newDate);
-        setDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), newDate.getHours(), newDate.getMinutes()));
+        onChange(new Date(value.getFullYear(), value.getMonth(), value.getDate(), newDate.getHours(), newDate.getMinutes()));
 
         hideTimePicker();
     }
@@ -45,10 +44,10 @@ export const DateInput = ({label, date, setDate}: DateInputProps) => {
         <Text>{label}</Text>
         <View style={styles.dateButton}>
             <TouchableOpacity onPress={showDatePicker} style={{ ...styles.input, padding: 10, flex: 2 }}>
-                <Text variant="bodyLarge">{date.toLocaleDateString()}</Text>
+                <Text variant="bodyLarge">{value.toLocaleDateString()}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={showTimePicker} style={{ ...styles.input, padding: 10, flex: 1 }}>
-                <Text variant="bodyLarge">{date.getHours()}:{date.getMinutes()}</Text>
+                <Text variant="bodyLarge">{value.getHours()}:{value.getMinutes()}</Text>
             </TouchableOpacity>
         </View>
         <DateTimePickerModal

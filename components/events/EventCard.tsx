@@ -1,3 +1,5 @@
+import { useFavouriteEvent, useUnFavouriteEvent } from "@/api/mutations/users";
+import { useIsFavouriteEvent } from "@/api/queries/users";
 import { Event } from "@/types/events";
 import { IconBookmark, IconBookmarkFilled, IconCalendar, IconEdit, IconMapPin } from "@tabler/icons-react-native";
 import { router } from "expo-router";
@@ -6,34 +8,68 @@ import { Text } from "react-native-paper";
 
 interface EventCardProps {
     event: Event;
-    isFavourite?: boolean;
     isToEdit?: boolean;
 }
 
+export const EventCard = ({ event, isToEdit }: EventCardProps) => {
+    const addFavouriteEvent = useFavouriteEvent();
+    const removeFavouriteEvent = useUnFavouriteEvent();
 
-export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
+    const {
+        data: isFavouriteEvent,
+        isError: isFavouriteEventError,
+        isLoading: isFavouriteEventLoading,
+        refetch,
+    } = useIsFavouriteEvent(event.id);
+
+    if (isFavouriteEventLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (isFavouriteEventError || isFavouriteEvent === undefined) {
+        return <Text>Error loading favourite event</Text>;
+    }
+
+    const handleFavourite = async () => {
+        if (isFavouriteEvent) {
+            await removeFavouriteEvent.mutateAsync(event.id);
+        } else {
+            await addFavouriteEvent.mutateAsync(event.id);
+        }
+
+        await refetch();
+    }
+
     return <TouchableOpacity style={styles.card} onPress={() => router.navigate({
-        pathname: "/(tabs)/events/[eventId]",
+        pathname: "/events/[eventId]",
         params: {
             eventId: event.id,
         },
     })}>
-        <Image source={event.image} resizeMode="cover" style={styles.image} />
+        {event.image ?
+            <Image source={{
+                uri: event.image,
+            }}
+                resizeMode="cover"
+                style={styles.image}
+            />
+            : <View style={styles.imagePlaceholder} />
+        }
         <View style={styles.content}>
             <View style={styles.contentHeader}>
                 <Text style={styles.eventTitle} variant="titleMedium">{event.name}</Text>
                 {!!isToEdit ?
                     <TouchableOpacity onPress={() => router.navigate({
-                        pathname: "/(tabs)/events/[eventId]/edit",
+                        pathname: "/events/[eventId]/edit",
                         params: {
                             eventId: event.id,
                         },
                     })}>
                         <IconEdit size={27} color="#000000" />
                     </TouchableOpacity>
-                    : <TouchableOpacity>
+                    : <TouchableOpacity onPress={() => { handleFavourite() }}>
                         {
-                            isFavourite ?
+                            isFavouriteEvent ?
                                 <IconBookmarkFilled size={27} color="#000000" /> :
                                 <IconBookmark size={27} color="#000000" />
                         }
@@ -42,7 +78,7 @@ export const EventCard = ({ event, isFavourite, isToEdit }: EventCardProps) => {
             <View style={styles.eventDetails}>
                 <View style={styles.detail}>
                     <IconMapPin size={20} color="#B0B0B0" />
-                    <Text style={styles.eventAddress} variant="bodyMedium">{event.address}</Text>
+                    <Text style={styles.eventAddress} variant="bodyMedium">{event.address.street}</Text>
                 </View>
                 <View style={styles.detail}>
                     <IconCalendar size={20} color="#B0B0B0" />
@@ -64,6 +100,12 @@ const styles = StyleSheet.create({
         height: 130,
         borderRadius: 10,
         overflow: "hidden",
+    },
+    imagePlaceholder: {
+        width: 130,
+        height: 130,
+        borderRadius: 10,
+        backgroundColor: "#B0B0B0",
     },
     content: {
         flexDirection: "column",

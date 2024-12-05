@@ -3,7 +3,7 @@ import { UserInfo, UserSession } from '@/types/users';
 import { Href, router } from 'expo-router';
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
-const AuthContext = createContext<{
+export const AuthContext = createContext<{
   signIn: (token: UserSession, href?: Href) => void;
   signOut: () => void;
   updateSession: (data: UserInfo) => void;
@@ -17,7 +17,6 @@ const AuthContext = createContext<{
   isLoading: false,
 });
 
-// This hook can be used to access the user info.
 export function useSession() {
   const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {

@@ -1,18 +1,23 @@
-import { EventCard } from "@/components/events/EventCard";
+import { CreatedEvents } from "@/components/events/CreatedEvents";
+import { EventsParticipating } from "@/components/events/EventsParticipating";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { EventsMock } from "@/constants/events";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
 
-export default function EventsParticipatingScreen() {
+export default function EventsScreen() {
+  const params = useLocalSearchParams();
+  const tab = params.tab as string;
+
+  const value = tab === "created" ? "created" : "participating";
+
   return (
     <AppLayout showHeader>
       <View style={styles.section}>
         <SegmentedButtons
-          value="participating"
-          onValueChange={(value) => value === "participating" ? router.replace("/(tabs)/events") : router.replace("/(tabs)/events/created")}
+          value={value}
+          onValueChange={(value) => router.navigate(`/(tabs)/events?tab=${value}`)}
           buttons={[
             {
               value: 'participating',
@@ -25,11 +30,8 @@ export default function EventsParticipatingScreen() {
           ]}
         />
 
-        <View style={styles.eventsSection}>
-          {EventsMock.map((event) => (
-            <EventCard key={event.name} event={event} isFavourite={false} />
-          ))}
-        </View>
+        {value === "created" ? <CreatedEvents /> : <EventsParticipating />}
+
       </View>
     </AppLayout>
   );

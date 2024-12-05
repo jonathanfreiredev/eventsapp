@@ -84,19 +84,18 @@ export function useStorageState(key: string): [UseStateHook<UserSession>[0], Use
         [key]
     );
 
-    const updateToken = useCallback(
-        (user: UserInfo) => {
-            const data = {
-                accessToken: state[1]?.accessToken || "",
-                user: user,
-            };
+    const updateToken = (user: UserInfo) => {
+        const jwtToken = state[1];
 
-            setState(data);
+        const data = {
+            accessToken: jwtToken?.accessToken || "",
+            user: user,
+        };
 
-            setStorageItemAsync(key, JSON.stringify(data));
-        },
-        [key]
-    );
+        setState(data);
+
+        setStorageItemAsync(key, JSON.stringify(data));
+    }
 
     return [state, setValue, updateToken];
 }

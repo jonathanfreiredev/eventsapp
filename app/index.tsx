@@ -19,10 +19,10 @@ export default function Home() {
         <Text style={styles.subtitle}>Crea eventos o participa en los de otras personas</Text>
       </View>
 
-      <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/(auth)/signup")}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => router.navigate("/(auth)/signup")}>
         <Text style={styles.registerButtonText}>Regístrate gratis</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
+      <TouchableOpacity onPress={() => router.navigate("/(auth)/login")}>
         <Text style={styles.loginText}>Inicia sesión</Text>
       </TouchableOpacity>
     </AuthLayout>
