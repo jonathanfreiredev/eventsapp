@@ -48,6 +48,8 @@ export default function EventScreen() {
     const eventDurationHours = Math.floor(eventDuration / 60);
     const eventDurationMinutes = eventDuration % 60;
 
+    const isParticipationDisabled = event.numParticipants >= event.capacity || event.endDate < new Date();
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
@@ -119,8 +121,9 @@ export default function EventScreen() {
                 </ScrollView>
 
                 <FloatingButton
-                    label={event.participating ? "Participando" : "Participar"}
-                    backgroundColor={event.participating ? "#5CB85C" : "default"}
+                    label={!isParticipationDisabled ? event.participating ? "Participando" : "Participar" : "Evento finalizado"}
+                    backgroundColor={!isParticipationDisabled ? event.participating ? "#5CB85C" : "default" : "#B0B0B0"}
+                    disabled={isParticipationDisabled}
                     onPress={async () => {
                         try {
                             if (event.participating) {

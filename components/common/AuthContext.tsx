@@ -3,7 +3,7 @@ import { UserInfo, UserSession } from '@/types/users';
 import { Href, router } from 'expo-router';
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
-const AuthContext = createContext<{
+export const AuthContext = createContext<{
   signIn: (token: UserSession, href?: Href) => void;
   signOut: () => void;
   updateSession: (data: UserInfo) => void;

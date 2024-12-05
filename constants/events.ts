@@ -18,6 +18,8 @@ export const EventsMock: Event[] = [
         numParticipants: 234,
         image: require('@/assets/images/events/techno-festival.jpg'),
         category: CategoryType.Music,
+        participating: true,
+        organiserId: "1",
     },
     {
         id: "2",
@@ -35,6 +37,8 @@ export const EventsMock: Event[] = [
         numParticipants: 152,
         image: require('@/assets/images/events/jazz.jpg'),
         category: CategoryType.Music,
+        participating: false,
+        organiserId: "2",
     },
     {
         id: "3",
@@ -52,5 +56,7 @@ export const EventsMock: Event[] = [
         numParticipants: 98,
         image: require('@/assets/images/events/indie-rock.jpg'),
         category: CategoryType.Music,
+        participating: true,
+        organiserId: "1",
     }
 ];
