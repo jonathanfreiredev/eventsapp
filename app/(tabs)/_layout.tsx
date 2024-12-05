@@ -1,35 +1,66 @@
+import { useAppTheme } from '@/hooks/useAppTheme';
+import { IconCategory, IconHome, IconTicket, IconUser } from '@tabler/icons-react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Text } from 'react-native-paper';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarInactiveTintColor: '#CCCCCC',
+        tabBarActiveTintColor: 'white',
+        tabBarIconStyle: {
+          color: "white",
+          marginVertical: "auto",
+        },
+        tabBarLabel: ({ focused, children }) => {
+          return (
+            <Text style={{ color: focused ? 'white' : '#CCCCCC', fontSize: focused ? 11 : 10 }}>
+              {children}
+            </Text>
+          )
+        },
+        tabBarStyle: {
+          backgroundColor: theme.colors.primary,
+          paddingVertical: 10,
+          height: 60,
+        },
         headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+          tabBarIcon: ({ focused }) =>
+            <IconHome size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="categories"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
+          title: 'Categorías',
+          tabBarIcon: ({ focused }) =>
+            <IconCategory size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
+        }}
+      />
+      <Tabs.Screen
+        name="events"
+        options={{
+          title: 'Eventos',
+          tabBarIcon: ({ focused }) =>
+            <IconTicket size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+
+          tabBarIcon: ({ focused }) =>
+            <IconUser size={focused ? 27 : 24} color={focused ? 'white' : '#CCCCCC'} />
         }}
       />
     </Tabs>

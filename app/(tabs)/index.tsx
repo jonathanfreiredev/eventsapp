@@ -1,70 +1,85 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { useGetEvents } from "@/api/queries/events";
+import { CategoryCard } from "@/components/categories/CategoryCard";
+import { EventCard } from "@/components/events/EventCard";
+import { AppLayout } from "@/components/layouts/AppLayout";
+import { Categories } from "@/constants/categories";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Text } from "react-native-paper";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function MainPageScreen() {
+  const params = useLocalSearchParams();
+  const category = params.category as string;
 
-export default function HomeScreen() {
+  const {
+    data: events,
+    isLoading,
+    isError,
+  } = useGetEvents(category);
+
+  const selectedCategory = Categories.find((c) => c.slug === category);
+
+  if (isLoading) {
+    return <ActivityIndicator animating={true} />;
+  }
+
+  if (isError || !events) {
+    return <Text>Error loading events</Text>;
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <AppLayout showHeader>
+      <View style={styles.section}>
+        <View style={styles.categoriesHeader}>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            Categorías
+          </Text>
+          <Text variant="titleSmall" style={{ color: "#B0B0B0" }} onPress={() => router.navigate("/(tabs)/categories")}>Ver todo</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {Categories.map((category) => (
+            <View key={category.name} style={styles.categoryCard}>
+              <CategoryCard category={category} isSelected={category.slug === selectedCategory?.slug} iconSize={40} onPress={() => {
+                router.navigate(`/(tabs)?category=${category.slug}`);
+              }} />
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.section}>
+        <Text variant="titleMedium" style={styles.sectionTitle}>Eventos - {selectedCategory?.name}</Text>
+        <View style={styles.eventsSection}>
+          {events.length > 0 ? events.map((event) => (
+            <EventCard key={event.name} event={event} />
+          )) : <Text>No hay eventos disponibles</Text>}
+        </View>
+      </View>
+    </AppLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  categoriesHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10
   },
-  stepContainer: {
-    gap: 8,
+  section: {
+    paddingVertical: 16,
+  },
+  sectionTitle: {
+    fontWeight: "bold",
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  eventsSection: {
+    flexDirection: "column",
+    gap: 10,
   },
+  categoryCard: {
+    width: 140,
+    height: 140,
+    marginRight: 5,
+  }
 });
