@@ -1,10 +1,10 @@
 import { useFavouriteEvent, useUnFavouriteEvent } from "@/api/mutations/users";
 import { useIsFavouriteEvent } from "@/api/queries/users";
 import { Event } from "@/types/events";
-import { IconBookmark, IconBookmarkFilled, IconCalendar, IconEdit, IconMapPin } from "@tabler/icons-react-native";
+import { IconCalendar, IconEdit, IconMapPin } from "@tabler/icons-react-native";
 import { router } from "expo-router";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { Icon, Text } from "react-native-paper";
 
 interface EventCardProps {
     event: Event;
@@ -70,8 +70,8 @@ export const EventCard = ({ event, isToEdit }: EventCardProps) => {
                     : <TouchableOpacity onPress={() => { handleFavourite() }}>
                         {
                             isFavouriteEvent ?
-                                <IconBookmarkFilled size={27} color="#000000" /> :
-                                <IconBookmark size={27} color="#000000" />
+                                <Icon source="bookmark" size={27} color="#000000" /> :
+                                <Icon source="bookmark-outline" size={27} color="#000000" />
                         }
                     </TouchableOpacity>}
             </View>

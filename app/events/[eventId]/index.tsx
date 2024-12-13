@@ -1,12 +1,14 @@
 import { useLeaveEvent, useParticipateInEvent } from "@/api/mutations/events";
+import { useFavouriteEvent, useUnFavouriteEvent } from "@/api/mutations/users";
 import { useGetEvent } from "@/api/queries/events";
+import { useIsFavouriteEvent } from "@/api/queries/users";
 import { useSession } from "@/components/common/AuthContext";
 import { FloatingButton } from "@/components/common/FloatingButton";
-import { IconBookmark, IconCalendar, IconMapPin } from "@tabler/icons-react-native";
+import { IconCalendar, IconMapPin } from "@tabler/icons-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { ActivityIndicator, IconButton, Text } from "react-native-paper";
+import { ActivityIndicator, Icon, IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventScreen() {
@@ -15,6 +17,8 @@ export default function EventScreen() {
 
     const participateInEvent = useParticipateInEvent();
     const leaveEvent = useLeaveEvent();
+    const addFavouriteEvent = useFavouriteEvent();
+    const removeFavouriteEvent = useUnFavouriteEvent();
 
     const {
         data: event,
@@ -23,13 +27,20 @@ export default function EventScreen() {
         refetch,
     } = useGetEvent(eventId as string);
 
+    const {
+        data: isFavouriteEvent,
+        isError: isFavouriteEventError,
+        isLoading: isFavouriteEventLoading,
+        refetch: refetchFavouriteEvent,
+    } = useIsFavouriteEvent(eventId as string);
+
     useEffect(() => {
         if (!session && !isLoadingSession) {
             router.navigate("/(auth)/login");
         }
     }, [session, isLoadingSession]);
 
-    if (isLoadingSession || isLoading) {
+    if (isLoadingSession || isLoading || isFavouriteEventLoading) {
         return <ActivityIndicator animating={true} />;
     }
 
@@ -39,7 +50,7 @@ export default function EventScreen() {
         </Text>
     }
 
-    if (isError || !event) {
+    if (isError || isFavouriteEventError || !event) {
         return <Text>Error loading event</Text>;
     }
 
@@ -49,6 +60,17 @@ export default function EventScreen() {
     const eventDurationMinutes = eventDuration % 60;
 
     const isParticipationDisabled = event.numParticipants >= event.capacity || event.endDate < new Date();
+
+    const handleFavourite = async () => {
+        if (isFavouriteEvent) {
+            await removeFavouriteEvent.mutateAsync(event.id);
+        } else {
+            await addFavouriteEvent.mutateAsync(event.id);
+        }
+
+        await refetchFavouriteEvent();
+        await refetch();
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -77,8 +99,12 @@ export default function EventScreen() {
                     <View style={styles.eventContent}>
                         <View style={styles.sectionTitle}>
                             <Text variant="titleLarge">{event.name}</Text>
-                            <TouchableOpacity>
-                                <IconBookmark size={30} color="black" />
+                            <TouchableOpacity onPress={() => { handleFavourite() }}>
+                                {
+                                    isFavouriteEvent ?
+                                        <Icon source="bookmark" size={27} color="#000000" /> :
+                                        <Icon source="bookmark-outline" size={27} color="#000000" />
+                                }
                             </TouchableOpacity>
                         </View>
                         <View style={styles.sectionLinks}>
@@ -132,6 +158,7 @@ export default function EventScreen() {
                                 await participateInEvent.mutateAsync(event.id);
                             }
                             await refetch();
+                            await refetchFavouriteEvent();
                         } catch (error: any) {
                             console.error(error.message);
                         }
